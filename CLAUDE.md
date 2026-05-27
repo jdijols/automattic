@@ -121,3 +121,37 @@ Key routing rules:
 ## Notes on AI tool usage
 
 Per the brief: *"You're building an AI-powered product — it would be strange not to use AI to help build it. Use whatever tools make you most effective."* But AI-generated code must clear the same quality bar as anything else in this codebase. Both the AI's output (the theme) and the code that manages it (the app) must be high quality.
+
+## GBrain Configuration (configured by /setup-gbrain)
+- Mode: local-stdio
+- Engine: pglite
+- Config file: ~/.gbrain/config.json (mode 0600)
+- Brain database: ~/.gbrain/brain.pglite
+- gbrain version: 0.18.2
+- Setup date: 2026-05-27
+- MCP registered: yes (user scope, `mcp__gbrain__*` tools available after Claude Code restart)
+- Artifacts sync: off (re-enable with `gstack-config set artifacts_sync_mode artifacts-only`)
+- Transcript ingest: incremental (new sessions auto-ingest; no historical bulk load)
+- Current repo policy: unset (no `origin` remote — policy will be set when remote is added)
+- Embedding provider: gbrain auto-selected (set `VOYAGE_API_KEY` for voyage-code-3, the gstack default for code retrieval)
+
+## GBrain Search Guidance (configured by /sync-gbrain)
+<!-- gstack-gbrain-search-guidance:start -->
+
+GBrain is set up and synced on this machine. The agent should prefer gbrain over Grep when the question is semantic or when you don't know the exact identifier yet. Two indexed corpora available via the `gbrain` CLI:
+- This repo's code (will register as `gstack-code-automattic` source after first `/sync-gbrain --full`)
+- `~/.gstack/` curated memory (registered as `gstack-brain-jasondijols` source via the federation pipeline)
+
+Prefer gbrain when:
+- "Where is X handled?" / semantic intent, no exact string yet:
+    `gbrain search "<terms>"` or `gbrain query "<question>"`
+- "Where is symbol Y defined?" / symbol-based code questions:
+    `gbrain code-def <symbol>` or `gbrain code-refs <symbol>`
+- "What calls Y?" / "What does Y depend on?":
+    `gbrain code-callers <symbol>` / `gbrain code-callees <symbol>`
+- "What did we decide last time?" / past plans, retros, learnings:
+    `gbrain search "<terms>" --source gstack-brain-jasondijols`
+
+Grep is still right for known exact strings, regex, multiline patterns, and file globs. The brain auto-syncs incrementally on every gstack skill start. Run `/sync-gbrain` to force-refresh, `/sync-gbrain --full` for full reindex.
+
+<!-- gstack-gbrain-search-guidance:end -->
