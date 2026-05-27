@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Build output
+dist/
+build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+
+# Generated themes (test artifacts, debug zips)
+generated/
+*.zip
+!References/*.zip
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+*.log
+
+# Local agent settings (personal overrides — never committed)
+.claude/settings.local.json
+.claude/local-settings.json
+.cursor/local-*
+
+# Logs (keep folder, ignore contents except .gitkeep)
+Logs/*
+!Logs/.gitkeep
+
+# Python / dev
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
