@@ -1,0 +1,2 @@
+{ "description": "out-of-range heading.level: 7 is rejected", "target": "ir", "expect": "reject", "expectedCode": "ATTRIBUTE_OUT_OF_RANGE",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/heading","attributes":{"level":7}}]}]} }

@@ -1,0 +1,2 @@
+{ "description": "a malformed (non-hex) color token value is rejected", "target": "ir", "expect": "reject", "expectedCode": "TOKEN_VALUE_INVALID", "expectedInvariant": "invalid-theme-json",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{"colors":[{"slug":"brandx","color":"not-a-color"}]},"regions":[{"kind":"template","name":"index","content":[{"block":"core/paragraph","text":"x"}]}]} }

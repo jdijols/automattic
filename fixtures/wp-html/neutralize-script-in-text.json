@@ -1,0 +1,2 @@
+{ "description": "a raw <script> inside a text field passes (HTML-escaped at assembly)", "target": "ir", "expect": "pass",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/paragraph","text":"<script>alert(1)</script>"}]}]} }

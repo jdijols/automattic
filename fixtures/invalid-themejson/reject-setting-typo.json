@@ -1,0 +1,2 @@
+{ "description": "a setting-key typo (colour) is rejected", "target": "themejson", "expect": "reject", "expectedCode": "THEME_JSON_INVALID", "expectedInvariant": "invalid-theme-json",
+  "input": { "version": 3, "settings": {}, "colour": {} } }

@@ -1,0 +1,118 @@
+{
+  "description": "blog archetype: cover hero (one h1) + query loop + footer pattern",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "aurora-blog",
+      "title": "Aurora",
+      "description": "Essays on craft.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#0b0b0f" },
+        { "slug": "contrast", "color": "#f5f5f7" },
+        { "slug": "primary", "color": "#6d5dfc" }
+      ],
+      "fontSizes": [
+        { "slug": "medium", "size": "1.125rem" },
+        { "slug": "xxx-large", "size": "3.5rem" }
+      ],
+      "spacing": [
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "80", "size": "5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "index",
+        "content": [
+          {
+            "block": "core/cover",
+            "attributes": { "dimRatio": 60, "overlayColor": "base", "align": "full" },
+            "innerBlocks": [
+              {
+                "block": "core/group",
+                "attributes": { "layout": { "type": "constrained" } },
+                "innerBlocks": [
+                  {
+                    "block": "core/heading",
+                    "attributes": { "level": 1, "textColor": "contrast", "fontSize": "xxx-large" },
+                    "text": "Words in the dark"
+                  },
+                  {
+                    "block": "core/paragraph",
+                    "attributes": { "textColor": "contrast" },
+                    "text": "Essays on craft, shipped weekly."
+                  },
+                  {
+                    "block": "core/buttons",
+                    "innerBlocks": [
+                      {
+                        "block": "core/button",
+                        "attributes": {
+                          "backgroundColor": "primary",
+                          "textColor": "base",
+                          "url": "https://example.com/start"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "block": "core/query",
+            "nodeKind": "template-region",
+            "attributes": { "query": { "perPage": 10, "postType": "post", "orderBy": "date", "order": "desc" } },
+            "innerBlocks": [
+              {
+                "block": "core/post-template",
+                "nodeKind": "template-region",
+                "innerBlocks": [
+                  { "block": "core/post-featured-image" },
+                  { "block": "core/post-title" },
+                  { "block": "core/post-date" },
+                  { "block": "core/post-excerpt" }
+                ]
+              },
+              {
+                "block": "core/query-pagination",
+                "innerBlocks": [
+                  { "block": "core/query-pagination-previous" },
+                  { "block": "core/query-pagination-numbers" },
+                  { "block": "core/query-pagination-next" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "part",
+        "name": "footer",
+        "content": [
+          {
+            "block": "core/group",
+            "attributes": { "layout": { "type": "constrained" } },
+            "innerBlocks": [
+              { "block": "core/navigation", "attributes": { "overlayMenu": "mobile" } },
+              {
+                "block": "core/social-links",
+                "innerBlocks": [
+                  { "block": "core/social-link", "attributes": { "url": "https://example.com", "service": "wordpress" } },
+                  { "block": "core/social-link", "attributes": { "url": "https://example.com/feed", "service": "feed" } }
+                ]
+              },
+              { "block": "core/paragraph", "attributes": { "textColor": "contrast" }, "text": "© Aurora" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

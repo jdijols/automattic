@@ -1,0 +1,2 @@
+{ "description": "a custom fontSize preset reusing a core slug without the default-disable flag is rejected", "target": "themejson", "expect": "reject", "expectedCode": "THEME_JSON_INVALID", "expectedInvariant": "invalid-theme-json",
+  "input": { "version": 3, "settings": { "typography": { "fontSizes": [ { "slug": "large", "size": "2rem", "name": "Large" } ] } } } }

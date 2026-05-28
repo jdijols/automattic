@@ -1,0 +1,2 @@
+{ "description": "a CSS-injection color value is rejected by hex validation", "target": "ir", "expect": "reject", "expectedCode": "TOKEN_VALUE_INVALID", "expectedInvariant": "invalid-theme-json",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{"colors":[{"slug":"brandx","color":"#f00; } body{ background:url(x) }"}]},"regions":[{"kind":"template","name":"index","content":[{"block":"core/paragraph","text":"x"}]}]} }

@@ -1,0 +1,2 @@
+{ "description": "a color attribute referencing an undeclared, non-core slug is a dangling token reference", "target": "ir", "expect": "reject", "expectedCode": "DANGLING_TOKEN_REFERENCE",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{"colors":[{"slug":"base","color":"#000000"}]},"regions":[{"kind":"template","name":"index","content":[{"block":"core/group","attributes":{"backgroundColor":"brandnope"}}]}]} }

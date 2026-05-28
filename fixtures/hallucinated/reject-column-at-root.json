@@ -1,0 +1,2 @@
+{ "description": "valid name in invalid position: core/column at region root", "target": "ir", "expect": "reject", "expectedCode": "BLOCK_CONTAINMENT",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/column"}]}]} }

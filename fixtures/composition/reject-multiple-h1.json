@@ -1,0 +1,2 @@
+{ "description": "two level-1 headings on one page reject at layer 2b (passes 2a)", "target": "ir", "expect": "reject", "expectedCode": "MULTIPLE_H1",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/heading","attributes":{"level":1},"text":"One"},{"block":"core/heading","attributes":{"level":1},"text":"Two"}]}]} }

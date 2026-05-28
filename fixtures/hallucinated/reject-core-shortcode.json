@@ -1,0 +1,2 @@
+{ "description": "real-but-excluded core/shortcode (PHP escape hatch) is rejected", "target": "ir", "expect": "reject", "expectedCode": "BLOCK_NOT_ALLOWED", "expectedInvariant": "hallucinated-block-name",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/shortcode"}]}]} }

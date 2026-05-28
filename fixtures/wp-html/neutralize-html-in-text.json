@@ -1,0 +1,2 @@
+{ "description": "wp:html delimiters inside a text field pass (rendered literal, not structural)", "target": "ir", "expect": "pass",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/paragraph","text":"Here is the markup: <!-- wp:html -->evil<!-- /wp:html -->"}]}]} }
