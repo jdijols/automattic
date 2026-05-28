@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "irVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,39}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 280
+        },
+        "wpVersionTarget": {
+          "default": "6.6",
+          "type": "string",
+          "const": "6.6"
+        }
+      },
+      "required": [
+        "slug",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "tokens": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "maxItems": 48,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]{0,39}$"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "color": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "required": [
+              "slug",
+              "color"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "fontSizes": {
+          "maxItems": 24,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]{0,39}$"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "size": {
+                "type": "string",
+                "maxLength": 60
+              }
+            },
+            "required": [
+              "slug",
+              "size"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "spacing": {
+          "maxItems": 24,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]{0,39}$"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "size": {
+                "type": "string",
+                "maxLength": 60
+              }
+            },
+            "required": [
+              "slug",
+              "size"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "regions": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "template",
+              "part"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "404",
+              "index",
+              "single",
+              "archive",
+              "page",
+              "home",
+              "header",
+              "footer"
+            ]
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "content"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "irVersion",
+    "theme",
+    "tokens",
+    "regions"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "__schema0": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "block": {
+              "type": "string",
+              "enum": [
+                "core/group",
+                "core/columns",
+                "core/column",
+                "core/cover",
+                "core/spacer",
+                "core/separator",
+                "core/buttons",
+                "core/button",
+                "core/paragraph",
+                "core/heading",
+                "core/image",
+                "core/list",
+                "core/list-item",
+                "core/quote",
+                "core/site-title",
+                "core/site-logo",
+                "core/site-tagline",
+                "core/navigation",
+                "core/social-links",
+                "core/social-link",
+                "core/template-part",
+                "core/query",
+                "core/post-template",
+                "core/post-title",
+                "core/post-featured-image",
+                "core/post-excerpt",
+                "core/post-date",
+                "core/query-pagination",
+                "core/query-pagination-previous",
+                "core/query-pagination-numbers",
+                "core/query-pagination-next",
+                "core/query-no-results"
+              ]
+            },
+            "nodeKind": {
+              "default": "static",
+              "type": "string",
+              "enum": [
+                "static",
+                "template-region"
+              ]
+            },
+            "attributes": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "innerBlocks": {
+              "maxItems": 32,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/__schema0"
+              }
+            }
+          },
+          "required": [
+            "block"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{1,39}$"
+            },
+            "nodeKind": {
+              "default": "static",
+              "type": "string",
+              "enum": [
+                "static",
+                "template-region"
+              ]
+            },
+            "params": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "tokenRef"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 120
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "text"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "url"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "scalar"
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string",
+                            "maxLength": 120
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "pattern"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
