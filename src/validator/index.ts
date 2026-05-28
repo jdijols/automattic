@@ -10,6 +10,7 @@
 import { type ValidationError, type ValidationResult } from "./errors";
 import { type IRValidated, layer1 } from "./layer1-schema";
 import { layer2a, layer2b } from "./layer2-blocktree";
+import { layer3 } from "./layer3-themejson";
 
 export type { ValidationError, ValidationResult, ErrorCode, ValidationLayer, Invariant } from "./errors";
 export { ERROR_CODES } from "./errors";
@@ -33,8 +34,10 @@ export function validateIR(input: unknown): ValidationResult<IRValidated> {
   const errors2b = layer2b(ir);
   if (errors2b.length > 0) return fail(errors2b);
 
-  // ── Layer 3 seam (U5): compile tokens → theme.json, validate with AJV.
-  //    const errors3 = layer3(ir); if (errors3.length) return fail(errors3);
+  // Layer 3 — compile tokens → theme.json, validate with AJV + token values.
+  const errors3 = layer3(ir);
+  if (errors3.length > 0) return fail(errors3);
+
   // ── Layer 4 seam (U9): byte-scan assembled output for wp:html + re-parse names.
   //    (runs post-assembly, against the artifact — wired in the assembler path.)
 
