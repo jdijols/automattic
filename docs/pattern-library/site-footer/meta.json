@@ -1,0 +1,38 @@
+{
+  "name": "site-footer",
+  "title": "Three-Column Site Footer",
+  "region": "footer",
+  "validRegions": ["footer"],
+  "blocksUsed": [
+    "core/group",
+    "core/columns",
+    "core/column",
+    "core/site-title",
+    "core/paragraph",
+    "core/heading",
+    "core/navigation",
+    "core/social-links",
+    "core/social-link"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast"],
+    "fontSize": ["small", "large"],
+    "spacing": ["30", "50", "60", "70"]
+  },
+  "parameterizable": {
+    "content": ["tagline text", "column headings", "social services + URLs", "copyright text"],
+    "tokens": ["background color", "text color", "type scale", "spacing scale"],
+    "layoutKnobs": ["column count + widths", "navigation orientation", "social-links style (logos-only | default | pill)"]
+  },
+  "locked": [
+    "column > content nesting",
+    "headings here are h3 (footer is low in the document outline — never h1/h2)",
+    "site-title uses level:0 (renders as a non-heading span, correct for footer chrome)"
+  ],
+  "compositionRules": {
+    "occursOncePerPage": true,
+    "validTemplates": ["ALL — footer is a template part shared across templates"],
+    "isTemplatePart": "in a real theme this becomes parts/footer.html referenced by every template"
+  },
+  "notes": "core/navigation references a wp_navigation entity (a menu) — the assembler must either create a default Navigation menu or the block renders empty. This is a site-data dependency the IR must flag, not just markup. social-link 'service' is an enum the validator should check against core's known services. Footer headings are h3: the document-outline rule (one h1 in hero, h2 for sections, h3 for sub-sections) is a cross-pattern invariant the assembler enforces, not something any single pattern can guarantee alone."
+}

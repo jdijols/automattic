@@ -1,0 +1,36 @@
+{
+  "name": "hero-cover",
+  "title": "Centered Hero (Cover)",
+  "region": "hero",
+  "validRegions": ["hero", "page-top"],
+  "blocksUsed": [
+    "core/cover",
+    "core/group",
+    "core/heading",
+    "core/paragraph",
+    "core/buttons",
+    "core/button"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "primary"],
+    "fontSize": ["medium", "xxx-large"],
+    "spacing": ["40", "50", "80"]
+  },
+  "parameterizable": {
+    "content": ["heading text", "paragraph text", "button labels", "button URLs"],
+    "tokens": ["overlayColor", "text color", "button background/text color", "padding scale"],
+    "media": ["cover background image (optional — omit for solid-overlay hero)"],
+    "structuralKnobs": ["dimRatio (overlay darkness 0-100)", "minHeight", "constrained contentSize"]
+  },
+  "locked": [
+    "block nesting: cover > inner-container > group(constrained) > [heading, paragraph, buttons]",
+    "exactly one h1 (level 1) — this is the page's primary heading",
+    "buttons centered via flex layout"
+  ],
+  "compositionRules": {
+    "occursOncePerPage": true,
+    "validTemplates": ["front-page", "home", "page"],
+    "mustBeFirstInMainOrSecond": true
+  },
+  "notes": "Distinctiveness comes from token values (overlay color, type scale) + optional background image, NOT from restructuring. The h1 here is the document's single h1; downstream patterns must use h2+. The outline button uses a block style variation (is-style-outline) that the theme.json must register or core provides."
+}

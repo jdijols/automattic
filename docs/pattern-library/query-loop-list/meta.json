@@ -1,0 +1,42 @@
+{
+  "name": "query-loop-list",
+  "title": "Post Grid (Query Loop)",
+  "region": "content",
+  "validRegions": ["content", "home-feed", "archive-feed"],
+  "blocksUsed": [
+    "core/group",
+    "core/heading",
+    "core/query",
+    "core/post-template",
+    "core/post-featured-image",
+    "core/post-title",
+    "core/post-date",
+    "core/post-excerpt",
+    "core/query-pagination",
+    "core/query-pagination-previous",
+    "core/query-pagination-numbers",
+    "core/query-pagination-next"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "secondary"],
+    "fontSize": ["small", "large", "xx-large"],
+    "spacing": ["30", "50", "60", "70"]
+  },
+  "parameterizable": {
+    "content": ["section heading text"],
+    "tokens": ["background color", "type scale", "spacing scale", "featured-image border radius"],
+    "queryKnobs": ["perPage", "orderBy (date/title/menu_order)", "order (asc/desc)", "postType"],
+    "layoutKnobs": ["post-template layout (grid columnCount 1-4 | list)", "which post fields appear + their order"]
+  },
+  "locked": [
+    "query > post-template > [post-* fields] nesting — post-* blocks are ONLY valid inside post-template",
+    "query-pagination is a direct child of query, sibling to post-template",
+    "headings here are h2/h3 — never h1 (hero owns the single h1)"
+  ],
+  "compositionRules": {
+    "occursOncePerPage": "typically",
+    "validTemplates": ["front-page", "home", "index", "archive"],
+    "requiresDynamicContext": "post-* blocks resolve against the loop's current post; meaningless outside a query/template context"
+  },
+  "notes": "This is the IR's hardest case: a DYNAMIC block (query) whose inner post-template is a TEMPLATE applied per-post, not static content. The IR must distinguish 'static subtree' (hero) from 'template subtree applied N times' (post-template). post-* blocks are context-bound — the validator must reject them outside a query/post-template ancestor. inherit:false means this query defines its own params (vs inheriting the template's main query)."
+}
