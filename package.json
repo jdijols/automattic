@@ -1,0 +1,42 @@
+{
+  "name": "wp-block-theme-generator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-powered WordPress FSE Block Theme generator (Track 1 correctness backbone). NOTE: product name is a TODO — see CLAUDE.md Naming.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.81",
+    "@wordpress/block-library": "9.47.0",
+    "@wordpress/blocks": "15.20.0",
+    "@wp-playground/cli": "^3.1.35",
+    "ai": "^6.0.192",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "jszip": "^3.10.1",
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20.19.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^10.4.0",
+    "typescript": "~5.9.0",
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^4.1.7"
+  }
+}

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    name: Fast gate (lint + typecheck + unit tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Clean, reproducible install from the committed lockfile.
+      # No --legacy-peer-deps: the dependency set must resolve cleanly (R8).
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+    # NOTE: The Anthropic key is NOT needed by this fast gate (no live AI calls
+    # in unit tests). The slow Playground job added in U11 will inject
+    # ANTHROPIC_API_KEY from masked repository secrets — never echoed to logs.
