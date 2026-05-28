@@ -7,6 +7,8 @@ status: phase-1-planned-reviewed-issued · repo-live · build-ready
 
 # Handoff — Phase 1 planned, reviewed, and issued
 
+> **Update (2026-05-28, later) — superseded as the current pointer by [`2026-05-28-gbrain-fixed-build-underway.md`](2026-05-28-gbrain-fixed-build-underway.md).** Since this was written, **U1 was built and merged (PR #12, issue #1 closed)** and gbrain embeddings were fully fixed. The "Next — exact next steps" below (which begin "start U1") are therefore **done** — read the newer handoff for the current state. This doc remains the record of the plan→issues milestone.
+
 Durable narrative for resuming in a fresh chat. Pairs with the `/context-save` checkpoint (machine-local auto-resume). References artifacts by path — it does **not** duplicate them. Read the linked files for detail.
 
 ## Where we are

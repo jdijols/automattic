@@ -161,6 +161,17 @@ export function validateContainment(root: GrammarNode): ContainmentViolation[] {
   return violations;
 }
 
+/**
+ * The closed set of allowed child blocks for `block`, or undefined if the block
+ * places no restriction on its children. A block with a defined (possibly empty)
+ * allowedChildren cannot legitimately contain a patternRef expansion as a direct
+ * child — layer 2a uses this to catch that case, which the blockNode-only
+ * grammar walk cannot see.
+ */
+export function allowedChildrenOf(block: string): readonly AllowedBlockName[] | undefined {
+  return GRAMMAR[block as AllowedBlockName]?.allowedChildren;
+}
+
 function formatList(blocks: readonly string[]): string {
   if (blocks.length === 1) return blocks[0] as string;
   return `${blocks.slice(0, -1).join(", ")} or ${blocks[blocks.length - 1]}`;
