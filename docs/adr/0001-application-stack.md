@@ -60,3 +60,21 @@ The app stack is our choice; only the *output* is WordPress-specific (JSON/PHP/H
 - IR shape: free block-tree vs. pattern-composition vs. hybrid (PRD Q1)
 - Block-validation authority: vendored `@wordpress/blocks` vs. standalone allowlist vs. Playground-PHP (PRD Q3)
 - Specific default model within Anthropic (Opus vs. Sonnet) — a Phase 2 cost/quality tuning decision, not a stack decision
+
+## Contract reconciliation (added at U7 — frozen contract)
+
+The Phase-1 frozen contract is published under `contract/` (the IR JSON Schema, the
+block allowlist, the structured error format, the prompt-construction boundary).
+Reconciling PRD §8.1 so Track 3 codes against reality:
+
+- `generateObject` strict-validates the IR **envelope** only. Under the Q7 Option-C
+  decision the recursive block tree arrives as best-effort JSON and is enforced by
+  the §5 validator, **not** at generation time — "trust the parser, not the prompt."
+- `patternRef.params` is a **category-tagged slot map** whose `kind` discriminator
+  (`tokenRef` | `text` | `url` | `scalar`) is part of the frozen contract: Track 3
+  constructs valid params from it, the validator validates them, the assembler
+  escapes per kind. Only the slot→block-attribute *targeting* convention stays
+  provisional (settled in U8).
+- The validator entry point is `validateIR(input): ValidationResult<IRValidated>` —
+  success is `{ ok: true, value }`, failure is `{ ok: false, errors }`. Track 3
+  branches on `result.ok` and reads `result.value` (see `contract/error-format.md`).
