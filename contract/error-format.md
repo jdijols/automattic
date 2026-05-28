@@ -68,7 +68,7 @@ re-injecting into a prompt (they are not pre-stripped of `<!-- wp:` / `?>`).
 
 ### Layer 2b — post-composition (`layer: "block-tree"`)
 - `MULTIPLE_H1` — more than one `h1` across the page.
-- `HEADING_OUTLINE` — heading-outline sanity violation.
+- `HEADING_OUTLINE` — heading-outline sanity violation. *(Reserved: declared now to freeze the enum; the full outline check is a deferred follow-up with no producer in the MVP.)*
 - `REGION_NOT_UNIQUE` — duplicate singleton region (e.g. two heroes/footers).
 - `DANGLING_TOKEN_REFERENCE` — a token reference that resolves against neither the IR `tokens` palette nor a WordPress core default preset. **Fires for color, font-size, AND spacing slugs** (and bare-slug attrs like `backgroundColor`/`fontSize`) — not color-only.
 
@@ -89,3 +89,8 @@ re-injecting into a prompt (they are not pre-stripped of `<!-- wp:` / `?>`).
 - **Pattern-internal headings are opaque.** `MULTIPLE_H1` walks `blockNode`s only;
   `patternRef` bodies are not introspected. "Pattern-only" output is guaranteed valid
   *as far as the validator sees*, not absolutely.
+- **`core/site-title` is NOT counted by `MULTIPLE_H1`.** It renders as an `<h1>` by
+  default (its `level` defaults to 1), but the check counts only `core/heading` blocks
+  with `level: 1`. A page placing both a `core/site-title` and a level-1 `core/heading`
+  can present two visible h1s and still pass — Track 3 should avoid emitting a level-1
+  heading on pages that also use `core/site-title`.
