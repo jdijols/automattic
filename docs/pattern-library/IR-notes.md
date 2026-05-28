@@ -34,6 +34,8 @@ Each `meta.json` splits the surface into `parameterizable` (content, tokens, som
 
 `core/navigation` needs a `wp_navigation` menu entity. `core/site-title` reads site settings. These are **site-data dependencies** — the assembler must provision defaults (create a menu, set a title) or the blocks render empty. The IR must flag "this composition requires menu X / setting Y," and the assembler's contract includes provisioning, not just file emission. → adds a dimension to **PRD §6 (assembler)** that the v0 PRD may under-specify.
 
+> **Confirmed via Playground 2026-05-27.** The footer's `navigation` block resolved to whatever menu Playground already had ("Hello from WordPress Playground!", "Sample Page") — proof the block renders against data *outside its own markup*. A generated theme with no menu entity ships this block empty. The assembler MUST provision a default navigation menu. No longer theoretical.
+
 ## 6. Validation is two-layered: per-pattern AND cross-pattern
 
 Some invariants live inside one pattern (hero's nesting). Others are **cross-pattern composition rules** that no single pattern can guarantee:
@@ -49,6 +51,10 @@ This means the validator (PRD Q5) needs at least two passes: **(a) per-pattern s
 - **Query configuration** — `query` carries `perPage / orderBy / order / postType / inherit` — a constrained enum/int surface, NOT free content. The IR models it as a typed sub-object the AI fills within bounds.
 - **Block style variations** — `is-style-outline` (button), `is-style-logos-only` (social-links) reference style variations the theme must register. The IR's style vocabulary includes named variations, not just tokens.
 
+## 8. Parameterization has conditional rules, not just free slots
+
+`dimRatio` (hero cover) is the proof, surfaced by Playground validation: it can't be set freely. With a background image, 50-60 darkens for legibility; with no image, it must be 100 or the solid color renders as a washed translucent gray. So a "parameterizable slot" sometimes carries a **rule that depends on another slot's value** (here: presence of a background image). The IR/validator must express **inter-slot constraints**, not just per-slot bounds. The AI's slot-filling is constrained optimization, not independent assignment. → the validator (PRD Q5) checks constraints *across* slots, and the prompt (Track 3) must teach these rules.
+
 ## Net recommendation for PRD reconciliation
 
 When the loop converges and we reopen `phase-1-prd.md`:
@@ -58,5 +64,6 @@ When the loop converges and we reopen `phase-1-prd.md`:
 3. **Resolve Q5 → two validation layers** (per-pattern + post-composition), not one-or-the-other.
 4. **Expand §6 (assembler)** to include site-data provisioning, not just file emission.
 5. Add a PRD note that the IR carries: node-kind (static | template-region), token references, query-config sub-objects, style-variation references, and provisioning requirements.
+6. Add that parameterizable slots can carry **inter-slot rules** (dimRatio ↔ background-image presence), so the validator checks constraints *across* slots, not just within them, and the prompt must teach these rules.
 
-These are findings from three patterns. The full library will surface more — but the IR shape is already strongly implied.
+These are findings from three patterns, with #5 and #8 confirmed live in WordPress Playground (2026-05-27). The full library will surface more — but the IR shape is already strongly implied.

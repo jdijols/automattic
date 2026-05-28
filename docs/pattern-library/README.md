@@ -51,4 +51,11 @@ These hold *across* patterns and are the assembler's job to enforce — no singl
 
 ## Status
 
-These are reference-quality and structurally hand-checked, but **not yet machine-validated** — the validator doesn't exist until Phase 1. When it does, these become its first fixtures, and any byte-exact-serialization decision (PRD Q6) gets applied to them then. Optional earlier check: load each `pattern.html` in WordPress Playground to confirm it renders without "attempt block recovery."
+**Validated in WordPress Playground (WP 6.x, 2026-05-27):** all three patterns parse and render with **zero "Attempt Block Recovery" warnings** — structurally valid native block markup. Findings from validation are captured in each pattern's `meta.json` (`parameterizationRules`) and in [`IR-notes.md`](IR-notes.md).
+
+Caveats:
+- **Colors/fonts are approximate.** Our `theme.json` tokens don't exist yet, so token slugs resolve against the default Playground theme. Structural validity is the confirmed signal, not the palette.
+- **query-loop grid layout unconfirmed.** Playground had only one post, so the 3-column grid couldn't demonstrate itself. Pending multi-post confirmation.
+- **Not yet parser-validated in CI.** When the Phase 1 validator exists, these become its first fixtures, and any byte-exact-serialization decision (PRD Q6) applies to them then.
+
+Two findings the validation surfaced (now captured): the hero's `dimRatio` is conditional on the background-image slot, and the footer's `navigation` block is a confirmed site-data dependency the assembler must provision.

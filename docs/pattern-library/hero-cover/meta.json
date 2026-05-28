@@ -27,6 +27,9 @@
     "exactly one h1 (level 1) — this is the page's primary heading",
     "buttons centered via flex layout"
   ],
+  "parameterizationRules": [
+    "dimRatio is CONDITIONAL on whether a background image is set. With an image: 50-60 (darkens the image for text legibility). With NO image (solid-color hero): 100 (full opacity so the overlay color shows solid). Confirmed via Playground 2026-05-27 — dimRatio 60 with no image renders a washed translucent gray, not a solid hero. The AI must set dimRatio based on the image slot, not freely."
+  ],
   "compositionRules": {
     "occursOncePerPage": true,
     "validTemplates": ["front-page", "home", "page"],
