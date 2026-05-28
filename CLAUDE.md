@@ -95,6 +95,17 @@ The dev loop here is the **autonomous research loop recipe**:
 
 Seed context is load-bearing — every research loop pass must be grounded in this CLAUDE.md and the brief PDF. See `~/.claude/projects/-Users-jasondijols-Documents-Code-Projects-Automattic/memory/` for project memory.
 
+## Session continuity & handoffs
+
+Two complementary mechanisms:
+
+1. **Every session end → `/context-save`** (gstack). Machine-local checkpoint; auto-surfaced next session by `/context-restore` and the gstack preamble's Context Recovery block. This is the resume button.
+2. **At milestones** (end of a phase, a long autonomous run, a multi-hour session worth preserving) **→ commit `docs/handoffs/{YYYY-MM-DD}-{slug}.md`**. Durable, repo-resident narrative. Reference artifacts by path; never duplicate PRDs/ADRs/commits. Include: where we are, key decisions (linked), open/deferred questions, exact next steps, gotchas, suggested skills.
+
+Not every session needs #2 — reserve it for milestones, or it becomes overhead. Decisions themselves live in ADRs + PRDs + `STRATEGY.md` + the commit history (all gbrain-indexed); handoffs are *continuity*, not decision records (so they do not belong in `docs/adr/`).
+
+When this process is proven across a few milestones, skillify it for cross-project reuse via `write-a-skill` / `superpowers:writing-skills` — convention first, skill once the shape is stable.
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
