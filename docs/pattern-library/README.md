@@ -55,7 +55,7 @@ These hold *across* patterns and are the assembler's job to enforce — no singl
 
 Caveats:
 - **Colors/fonts are approximate.** Our `theme.json` tokens don't exist yet, so token slugs resolve against the default Playground theme. Structural validity is the confirmed signal, not the palette.
-- **query-loop grid layout unconfirmed.** Playground had only one post, so the 3-column grid couldn't demonstrate itself. Pending multi-post confirmation.
+- **query-loop grid layout confirmed on the frontend** (2026-05-28, 4 posts → 3-column row + wrap). Lesson: the block-editor canvas *misrenders* the grid as a single column — only the frontend is truthful. The Phase 1 install/activate harness (PRD Q7) and behavioral evals (Oracle #5) must render the FRONTEND, not inspect the editor, or they'll false-flag valid patterns.
 - **Not yet parser-validated in CI.** When the Phase 1 validator exists, these become its first fixtures, and any byte-exact-serialization decision (PRD Q6) applies to them then.
 
 Two findings the validation surfaced (now captured): the hero's `dimRatio` is conditional on the background-image slot, and the footer's `navigation` block is a confirmed site-data dependency the assembler must provision.
