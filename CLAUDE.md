@@ -152,13 +152,13 @@ Per the brief: *"You're building an AI-powered product — it would be strange n
 - Engine: pglite
 - Config file: ~/.gbrain/config.json (mode 0600)
 - Brain database: ~/.gbrain/brain.pglite
-- gbrain version: 0.18.2
-- Setup date: 2026-05-27
-- MCP registered: yes (user scope, `mcp__gbrain__*` tools available after Claude Code restart)
+- gbrain version: 0.41.26.1 (upgraded from 0.18.2 on 2026-05-28; bun git checkout of github.com/garrytan/gbrain)
+- Setup date: 2026-05-27 (brain re-initialized on voyage-code-3, 2026-05-28; old 0.18 brain preserved at `~/.gbrain/brain.pglite.bak-*`)
+- MCP registered: yes (user scope). After the 0.18→0.41 upgrade, restart Claude Code so the `mcp__gbrain__*` tools reload against 0.41.
 - Artifacts sync: off (re-enable with `gstack-config set artifacts_sync_mode artifacts-only`)
 - Transcript ingest: incremental (new sessions auto-ingest; no historical bulk load)
-- Current repo policy: unset (no `origin` remote — policy will be set when remote is added)
-- Embedding provider: gbrain auto-selected (set `VOYAGE_API_KEY` for voyage-code-3, the gstack default for code retrieval)
+- Current repo policy: unset; `origin` now exists (github.com/jdijols/automattic) + a `gitlab` mirror. Set a per-repo trust policy via `/setup-gbrain --repo` if desired.
+- Embedding provider: **voyage:voyage-code-3** (1024-dim), set at re-init (`gbrain init --pglite --embedding-model voyage:voyage-code-3`). `VOYAGE_API_KEY` is exported in **`~/.zshenv`** so non-interactive shells / gbrain subprocesses see it — it was only in `~/.zshrc` before, which interactive shells read but gbrain's subprocess did not. Note: 0.41's *default* provider is ZeroEntropy; we explicitly use Voyage. PGLite bakes the embedding dimension at init, so switching models later requires a wipe + re-init + re-import.
 
 ## GBrain Search Guidance (configured by /sync-gbrain)
 <!-- gstack-gbrain-search-guidance:start -->
