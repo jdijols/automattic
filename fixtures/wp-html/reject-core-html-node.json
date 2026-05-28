@@ -1,0 +1,2 @@
+{ "description": "a core/html node is rejected (wp-html invariant)", "target": "ir", "expect": "reject", "expectedCode": "BLOCK_NOT_ALLOWED", "expectedInvariant": "wp-html",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/html","attributes":{"content":"<div>x</div>"}}]}]} }

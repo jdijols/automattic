@@ -1,0 +1,95 @@
+{
+  "description": "landing-page archetype: cover hero (one h1) + 3-column feature grid + CTA buttons + footer pattern",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "ascent-landing",
+      "title": "Ascent",
+      "description": "A product landing page.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#ffffff" },
+        { "slug": "contrast", "color": "#101418" },
+        { "slug": "primary", "color": "#1763ff" }
+      ],
+      "fontSizes": [
+        { "slug": "medium", "size": "1.125rem" },
+        { "slug": "xx-large", "size": "2.5rem" }
+      ],
+      "spacing": [
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "70", "size": "4rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "home",
+        "content": [
+          {
+            "block": "core/cover",
+            "attributes": { "dimRatio": 30, "overlayColor": "contrast", "align": "full" },
+            "innerBlocks": [
+              {
+                "block": "core/group",
+                "attributes": { "layout": { "type": "constrained" } },
+                "innerBlocks": [
+                  {
+                    "block": "core/heading",
+                    "attributes": { "level": 1, "textColor": "base", "fontSize": "xx-large" },
+                    "text": "Ship faster."
+                  },
+                  {
+                    "block": "core/buttons",
+                    "innerBlocks": [
+                      {
+                        "block": "core/button",
+                        "attributes": { "backgroundColor": "primary", "textColor": "base", "url": "https://example.com/signup" }
+                      },
+                      {
+                        "block": "core/button",
+                        "attributes": { "textColor": "base", "url": "mailto:hello@example.com" }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "block": "core/columns",
+            "attributes": { "align": "wide" },
+            "innerBlocks": [
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/heading", "attributes": { "level": 2, "fontSize": "medium" }, "text": "Fast" },
+                  { "block": "core/paragraph", "text": "Edge-rendered everywhere." }
+                ]
+              },
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/heading", "attributes": { "level": 2, "fontSize": "medium" }, "text": "Safe" },
+                  { "block": "core/paragraph", "text": "Validated output, every time." }
+                ]
+              },
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/heading", "attributes": { "level": 2, "fontSize": "medium" }, "text": "Simple" },
+                  { "block": "core/paragraph", "text": "One screen, one download." }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}

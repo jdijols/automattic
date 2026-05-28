@@ -1,0 +1,2 @@
+{ "description": "unknown attribute key on a heading is rejected", "target": "ir", "expect": "reject", "expectedCode": "ATTRIBUTE_UNKNOWN",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{},"regions":[{"kind":"template","name":"index","content":[{"block":"core/heading","attributes":{"notARealAttribute":1}}]}]} }

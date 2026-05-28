@@ -1,0 +1,81 @@
+{
+  "description": "photographer portfolio archetype: cover hero (one h1) + 3-column image grid + footer pattern",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "lumen-portfolio",
+      "title": "Lumen",
+      "description": "Photography portfolio.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#111111" },
+        { "slug": "contrast", "color": "#fafafa" }
+      ],
+      "fontSizes": [
+        { "slug": "large", "size": "1.5rem" },
+        { "slug": "xx-large", "size": "2.75rem" }
+      ],
+      "spacing": [
+        { "slug": "40", "size": "1rem" },
+        { "slug": "60", "size": "2.5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "index",
+        "content": [
+          {
+            "block": "core/cover",
+            "attributes": { "dimRatio": 100, "overlayColor": "base", "align": "full" },
+            "innerBlocks": [
+              {
+                "block": "core/group",
+                "attributes": { "layout": { "type": "constrained" } },
+                "innerBlocks": [
+                  {
+                    "block": "core/heading",
+                    "attributes": { "level": 1, "textColor": "contrast", "fontSize": "xx-large" },
+                    "text": "Light & Form"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "block": "core/columns",
+            "attributes": { "align": "wide" },
+            "innerBlocks": [
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/image", "attributes": { "url": "https://example.com/p1.jpg" } },
+                  { "block": "core/heading", "attributes": { "level": 3, "fontSize": "large" }, "text": "Dunes" }
+                ]
+              },
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/image", "attributes": { "url": "https://example.com/p2.jpg" } },
+                  { "block": "core/heading", "attributes": { "level": 3, "fontSize": "large" }, "text": "Tide" }
+                ]
+              },
+              {
+                "block": "core/column",
+                "innerBlocks": [
+                  { "block": "core/image", "attributes": { "url": "https://example.com/p3.jpg" } },
+                  { "block": "core/heading", "attributes": { "level": 3, "fontSize": "large" }, "text": "Ridge" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}

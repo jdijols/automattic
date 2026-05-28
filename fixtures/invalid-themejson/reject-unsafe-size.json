@@ -1,0 +1,2 @@
+{ "description": "a size token carrying a CSS breakout is rejected", "target": "ir", "expect": "reject", "expectedCode": "TOKEN_VALUE_INVALID", "expectedInvariant": "invalid-theme-json",
+  "input": {"irVersion":1,"theme":{"slug":"demo-theme","title":"Demo","wpVersionTarget":"6.6"},"tokens":{"spacing":[{"slug":"loose","size":"1rem; } body {}"}]},"regions":[{"kind":"template","name":"index","content":[{"block":"core/paragraph","text":"x"}]}]} }
