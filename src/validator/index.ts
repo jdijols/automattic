@@ -15,6 +15,11 @@ import { layer3 } from "./layer3-themejson";
 export type { ValidationError, ValidationResult, ErrorCode, ValidationLayer, Invariant } from "./errors";
 export { ERROR_CODES } from "./errors";
 export type { IRValidated } from "./layer1-schema";
+// NOTE: layer 4 (U9) is intentionally NOT re-exported here. It runs post-assembly
+// against the artifact and depends on the `@wordpress/blocks` DOM runtime; pulling
+// it through this barrel would drag jsdom into the validator/orchestration import
+// graph (which must stay DOM-free). The assembler imports it directly from
+// `./layer4-scan`. Its error codes already live in the frozen enum (errors.ts).
 
 /**
  * Validate untrusted IR through layers 1–2 (Phase A). Returns the validated IR
