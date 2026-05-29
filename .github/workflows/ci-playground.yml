@@ -8,6 +8,13 @@ name: Playground gate
 #
 # Headless WASM, not a browser: the harness drives PHP directly via
 # @wp-playground/cli, so there is no Playwright / `npx playwright install` step.
+#
+# REQUIRED-CHECK CAVEAT: because the pull_request trigger is `paths`-filtered,
+# this workflow does NOT run on a PR that touches none of those paths (e.g. a
+# docs-only PR). Do NOT add this job to branch-protection "required status checks"
+# as-is — GitHub would wait forever for a status that never reports, blocking the
+# merge. The fast gate (ci.yml, all PRs) is the required check; this is an
+# additional confidence gate on theme-affecting changes.
 on:
   push:
     branches: [main]
@@ -48,10 +55,17 @@ jobs:
 
       # Cache the downloaded WP 6.6 / PHP 8.2 runtime so reruns avoid the network
       # fetch (the slowest, flakiest part of a cold boot).
+      # Cache the WP/PHP runtime + per-version site dirs. The version segment
+      # mirrors the pins in src/harness/run.ts (WP_VERSION/PHP_VERSION); the
+      # restore-keys prefix lets a stale-version cache still seed a partial
+      # restore. Playground namespaces its on-disk site dir by version, so a
+      # mismatched cache is harmless (it just re-fetches the new version).
       - name: Cache WordPress Playground runtime
         uses: actions/cache@v4
         with:
           path: ~/.wordpress-playground
           key: wp-playground-wp6.6-php8.2-${{ runner.os }}
+          restore-keys: |
+            wp-playground-
 
       - run: npm run test:slow

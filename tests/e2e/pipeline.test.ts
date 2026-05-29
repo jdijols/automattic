@@ -62,6 +62,10 @@ describe("end-to-end pipeline: IR → validate → assemble → zip → Playgrou
       // the lenient IRValidated type; once it passes, the same input is a valid
       // strict IR, obtained via irSchema.parse — the typed artifact the assembler
       // consumes (the U3 contract type, distinct from U4's lenient error type).
+      // The strict parse is TOTAL here: layer-2a already proved every block is in
+      // the allowlist and layer-1 shares irStructuralSchema's bounds, so a fixture
+      // that passes validateIR cannot trip irSchema. The assembled artifact is
+      // therefore built from the same input the gate approved.
       const validated = validateIR(fixture.input);
       expect(validated.ok, JSON.stringify(validated.ok ? null : validated.errors)).toBe(true);
       if (!validated.ok) return; // unreachable after the assert; narrows the type
