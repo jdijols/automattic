@@ -45,9 +45,12 @@ export const MAX_TEXT_LENGTH = 2000;
 export const MAX_DEPTH = 10;
 export const MAX_TOTAL_NODES = 2000;
 
+// The canonical theme-slug pattern. Exported so producer-side guards (T3-U2)
+// reuse this single source rather than re-typing the regex (drift-prone).
+export const THEME_SLUG_RE = /^[a-z][a-z0-9-]{1,39}$/;
 const themeSlug = z
   .string()
-  .regex(/^[a-z][a-z0-9-]{1,39}$/, "slug must be lowercase alphanumeric/hyphen, 2-40 chars");
+  .regex(THEME_SLUG_RE, "slug must be lowercase alphanumeric/hyphen, 2-40 chars");
 
 // Preset/token slugs may start with a digit (e.g. the spacing slug "50").
 const tokenSlug = z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/);

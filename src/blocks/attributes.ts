@@ -73,6 +73,15 @@ const URL_ATTRIBUTES: Partial<Record<AllowedBlockName, readonly string[]>> = {
   "core/image": ["url", "href"],
 };
 
+/**
+ * The URL-valued attribute keys for a block (empty if none). Exported so the
+ * T3-U2 producer guard targets the SAME per-block URL surface the validator
+ * enforces, rather than re-listing key names and risking drift.
+ */
+export function urlAttributesFor(block: string): readonly string[] {
+  return URL_ATTRIBUTES[block as AllowedBlockName] ?? [];
+}
+
 const SAFE_URL_SCHEMES = new Set(["http", "https", "mailto", "tel"]);
 
 // Strip all whitespace (incl. Unicode), control characters (C0/C1), and format

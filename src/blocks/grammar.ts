@@ -172,6 +172,16 @@ export function allowedChildrenOf(block: string): readonly AllowedBlockName[] | 
   return GRAMMAR[block as AllowedBlockName]?.allowedChildren;
 }
 
+/** The parent a block must sit directly inside, or undefined if unconstrained. */
+export function requiredParentOf(block: string): readonly AllowedBlockName[] | undefined {
+  return GRAMMAR[block as AllowedBlockName]?.requiredParent;
+}
+
+/** An ancestor a block must appear under, or undefined if unconstrained. */
+export function requiredAncestorOf(block: string): readonly AllowedBlockName[] | undefined {
+  return GRAMMAR[block as AllowedBlockName]?.requiredAncestor;
+}
+
 function formatList(blocks: readonly string[]): string {
   if (blocks.length === 1) return blocks[0] as string;
   return `${blocks.slice(0, -1).join(", ")} or ${blocks[blocks.length - 1]}`;
