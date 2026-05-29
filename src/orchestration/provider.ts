@@ -10,9 +10,10 @@
 //     caller-supplied signal, so a hung provider call cannot wedge the loop.
 //   • structured-output strategy via the Anthropic PROVIDER OPTION
 //     `structuredOutputMode` — NOT the dead v4-era `mode` parameter (#7791).
-//   • 5-min-TTL prompt caching via `providerOptions.anthropic.cacheControl`. T3-U2
-//     places the precise cache breakpoint; this seam sets the TTL default and
-//     lets the caller override the Anthropic options.
+//   • 5-min-TTL prompt caching placed as a `cache_control` breakpoint ON THE
+//     SYSTEM MESSAGE (Anthropic caches at content-block granularity, so a
+//     call-level cacheControl is a no-op). The byte-stable T3-U2 prefix is the
+//     system message and thus the cache target (origin §7.2).
 //   • `NoObjectGeneratedError` is CAUGHT and surfaced as a structured failure
 //     ({ cause, text, usage, finishReason }) for the T3-U3 repair/retry path —
 //     never thrown past the caller. `finishReason` lets the repair path tell a
@@ -32,6 +33,7 @@ import {
   generateObject,
   type LanguageModel,
   type LanguageModelUsage,
+  type ModelMessage,
   type RepairTextFunction,
 } from "ai";
 import type * as z from "zod";
@@ -112,11 +114,27 @@ export async function generateStructured<SCHEMA extends z.ZodType>(
   request: GenerateRequest,
 ): Promise<GenerateOutcome<z.infer<SCHEMA>>> {
   const timeoutMs = request.timeoutMs ?? REQUEST_TIMEOUT_MS;
-  const anthropicOptions: AnthropicProviderOptions = {
+  // Call-level Anthropic options: the structured-output strategy (and any caller
+  // override). The cache breakpoint is NOT here — Anthropic caches at CONTENT-
+  // BLOCK granularity, so a call-level cacheControl is a silent no-op. The 5m
+  // breakpoint is placed on the system message below (the byte-stable prefix is
+  // the cache target — origin §7.2).
+  const callAnthropicOptions: AnthropicProviderOptions = {
     structuredOutputMode: DEFAULT_STRUCTURED_OUTPUT_MODE,
-    cacheControl: CACHE_CONTROL_5M,
     ...request.anthropic,
   };
+
+  // Build the message list so the system prefix carries the cache_control
+  // breakpoint on its own block (the only placement Anthropic actually caches).
+  const messages: ModelMessage[] = [];
+  if (request.system !== undefined) {
+    messages.push({
+      role: "system",
+      content: request.system,
+      providerOptions: { anthropic: { cacheControl: CACHE_CONTROL_5M } },
+    });
+  }
+  messages.push({ role: "user", content: request.prompt });
 
   try {
     const result = await generateObject({
@@ -124,12 +142,11 @@ export async function generateStructured<SCHEMA extends z.ZodType>(
       schema,
       schemaName: "WordPressBlockThemeIR",
       schemaDescription: "A WordPress FSE block theme expressed as the published IR.",
-      system: request.system,
-      prompt: request.prompt,
+      messages,
       maxOutputTokens: request.maxOutputTokens ?? MAX_OUTPUT_TOKENS,
       abortSignal: callSignal(timeoutMs, request.abortSignal),
       experimental_repairText: request.repairText,
-      providerOptions: { anthropic: anthropicOptions },
+      providerOptions: { anthropic: callAnthropicOptions },
     });
     // result.object is the schema's parsed output; the cast bridges the SDK's
     // generic inference to our `z.infer<SCHEMA>` outcome type.
