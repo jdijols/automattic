@@ -57,6 +57,12 @@ export function buildInstallScript(slug: string): string {
 require '/wordpress/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 WP_Filesystem();
+global $wp_filesystem;
+// Remove any prior copy first so a reused Playground site (themes persist across
+// boots in the cached site dir) cannot leave stale files that unzip_file would
+// merge into — a deterministic, full-replace install.
+$target = WP_CONTENT_DIR . '/themes/${slug}';
+if ($wp_filesystem->is_dir($target)) { $wp_filesystem->delete($target, true); }
 $res = unzip_file('${ZIP_VFS_PATH}', WP_CONTENT_DIR . '/themes');
 if (is_wp_error($res)) { echo 'INSTALL_ERR:' . $res->get_error_message(); exit; }
 switch_theme('${slug}');
@@ -168,6 +174,14 @@ if (file_exists($tj_path)) {
 // Render each template/part on the FRONTEND (do_blocks expands wp:pattern, so a
 // nav that lives only inside the footer pattern blob is covered). Any rendered
 // core/navigation must have non-empty inner content.
+//
+// Scope note (honest limitation): this asserts the user-facing OUTCOME — the nav
+// is not blank — not the mechanism. WordPress auto-falls-back a bare ref-less
+// nav to a page-list when pages exist, so this assertion would also pass if our
+// provisioning were absent on such a site; it bites on a genuinely empty render
+// (e.g. a ref to a non-existent menu, with no fallback). That is the correct
+// outcome check for U10; attributing non-emptiness to OUR page-list provisioning
+// specifically is the assembler unit test's job, not the install gate's.
 foreach (array('templates', 'parts') as $sub) {
   $matches = glob($dir . '/' . $sub . '/*.html');
   if ($matches) {
@@ -184,7 +198,11 @@ foreach (array('templates', 'parts') as $sub) {
   }
 }
 
-echo '${GATE_BEGIN}' . json_encode(array('failures' => $failures)) . '${GATE_END}';
+// JSON_INVALID_UTF8_SUBSTITUTE: a detail string carrying invalid UTF-8 (e.g. a
+// binary chunk smuggled into innerHTML) would otherwise make json_encode return
+// false, which the JS side would read as "no failures" — a fail-OPEN. Substituting
+// keeps the result a valid object so a real failure is never silently dropped.
+echo '${GATE_BEGIN}' . json_encode(array('failures' => $failures), JSON_INVALID_UTF8_SUBSTITUTE) . '${GATE_END}';
 `;
 }
 
@@ -202,6 +220,16 @@ export function parseGateOutput(stdout: string): GateFailure[] {
     );
   }
   const json = stdout.slice(start + GATE_BEGIN.length, end);
-  const parsed = JSON.parse(json) as { failures?: GateFailure[] };
-  return parsed.failures ?? [];
+  const parsed = JSON.parse(json) as unknown;
+  // Validate the shape rather than `?? []` — if the PHP emitted anything other
+  // than `{failures: [...]}` (e.g. a json_encode that degraded to `false`), treat
+  // it as a crash, never as a clean pass (fail-closed).
+  if (
+    typeof parsed !== "object" ||
+    parsed === null ||
+    !Array.isArray((parsed as { failures?: unknown }).failures)
+  ) {
+    throw new Error(`Gate result is not a {failures: []} object: ${json.slice(0, 500)}`);
+  }
+  return (parsed as { failures: GateFailure[] }).failures;
 }

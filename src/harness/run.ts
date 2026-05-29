@@ -52,9 +52,15 @@ export async function bootPlayground(): Promise<Playground> {
     port: 0,
     skipBrowser: true,
     quiet: true,
+    // Pin to a single worker: the gate installs/asserts one theme at a time, so
+    // the default 'auto' (one worker per core) only adds resource pressure and
+    // boot variance on CI runners.
+    workers: 1,
   });
   const pg = server.playground;
   return {
+    // pg.run() itself rejects on a non-zero PHP exit (a fatal), so a crashed run
+    // surfaces as a thrown error here rather than silent empty output.
     async runPhp(code: string): Promise<string> {
       const result = await pg.run({ code });
       return result.text;
@@ -90,19 +96,4 @@ export async function assertActiveTheme(pg: Playground, slug: string): Promise<G
   const out = await pg.runPhp(buildAssertionScript(slug));
   const failures = parseGateOutput(out);
   return { ok: failures.length === 0, failures };
-}
-
-/**
- * Convenience: boot, install+activate, assert, dispose — the whole gate for one
- * theme. Prefer bootPlayground + installTheme + assertActiveTheme in a test suite
- * that exercises several themes, to share one boot.
- */
-export async function runInstallGate(zip: Uint8Array, slug: string): Promise<GateResult> {
-  const pg = await bootPlayground();
-  try {
-    await installTheme(pg, zip, slug);
-    return await assertActiveTheme(pg, slug);
-  } finally {
-    await pg.dispose();
-  }
 }
