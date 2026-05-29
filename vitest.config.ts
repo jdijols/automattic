@@ -11,9 +11,11 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts", "src/**/*.test.ts"],
-    // Playwright-driven end-to-end tests are added in U11 and run under a
-    // separate slow CI job, not the fast unit gate.
-    exclude: ["tests/e2e/**", "node_modules/**", ".next/**"],
+    // The slow gates run separately, not in the fast unit gate:
+    //   - tests/harness/** — WordPress Playground install/activate (U10), via
+    //     `npm run test:slow` (vitest.slow.config.ts).
+    //   - tests/e2e/** — Playwright end-to-end, added in U11.
+    exclude: ["tests/harness/**", "tests/e2e/**", "node_modules/**", ".next/**"],
     server: {
       deps: {
         // `@wordpress/blocks`' ESM build (`build-module`) does a bare `.json`

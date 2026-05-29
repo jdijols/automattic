@@ -12,6 +12,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:slow": "vitest run --config vitest.slow.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },
