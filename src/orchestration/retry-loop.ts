@@ -19,6 +19,7 @@
 // loop does not catch them, because re-prompting cannot fix a rate limit.
 import { type IRValidated, type ValidationError, type ValidationResult } from "../validator";
 
+import { type ProgressListener } from "./contract";
 import { type GenerateDeps, type GenerateInput, generateSingle } from "./generate";
 import { buildReprompt } from "./reprompt";
 import { NOOP_SINK, type TelemetrySink, escapeAttemptOf } from "./telemetry";
@@ -31,6 +32,8 @@ export interface RetryDeps extends GenerateDeps {
   sink?: TelemetrySink;
   /** Injectable monotonic clock (ms) for the latency metric; defaults to performance.now. */
   now?: () => number;
+  /** Coarse progress listener (T3-U6). One signal per attempt + one terminal. */
+  onProgress?: ProgressListener;
 }
 
 export interface RetryOutcome {
@@ -52,6 +55,7 @@ export interface RetryOutcome {
 export async function generateWithRetry(input: GenerateInput, deps: RetryDeps = {}): Promise<RetryOutcome> {
   const sink = deps.sink ?? NOOP_SINK;
   const now = deps.now ?? (() => performance.now());
+  const onProgress = deps.onProgress ?? (() => undefined);
   const generateDeps: GenerateDeps = { model: deps.model, sink };
 
   const start = now();
@@ -59,6 +63,9 @@ export async function generateWithRetry(input: GenerateInput, deps: RetryDeps = 
   let lastErrors: ValidationError[] = [];
 
   for (let attempt = 1; attempt <= RETRY_BUDGET; attempt += 1) {
+    // One progress signal per attempt: generating (attempt 1) or retrying (n/of).
+    onProgress({ phase: attempt === 1 ? "generating" : "retrying", attempt, of: RETRY_BUDGET });
+
     // Retries re-prompt from the FULL prior error list; the final attempt adds
     // the pattern-only fallback.
     const correction =
@@ -71,6 +78,7 @@ export async function generateWithRetry(input: GenerateInput, deps: RetryDeps = 
     if (result.ok) {
       sink.emit({ kind: "first-try-success", success: attempt === 1 });
       sink.emit({ kind: "latency", totalMs: now() - start, providerMs, attempts: attempt });
+      onProgress({ phase: "done" });
       return { result, attempts: attempt };
     }
 
@@ -81,5 +89,6 @@ export async function generateWithRetry(input: GenerateInput, deps: RetryDeps = 
 
   sink.emit({ kind: "first-try-success", success: false });
   sink.emit({ kind: "latency", totalMs: now() - start, providerMs, attempts: RETRY_BUDGET });
+  onProgress({ phase: "failed" });
   return { result: { ok: false, errors: lastErrors }, attempts: RETRY_BUDGET };
 }
