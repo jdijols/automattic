@@ -78,3 +78,20 @@ Reconciling PRD §8.1 so Track 3 codes against reality:
 - The validator entry point is `validateIR(input): ValidationResult<IRValidated>` —
   success is `{ ok: true, value }`, failure is `{ ok: false, errors }`. Track 3
   branches on `result.ok` and reads `result.value` (see `contract/error-format.md`).
+
+## Execution note (added 2026-05-29 — superseded by ADR-0002)
+
+Two choices above were superseded during execution. Recorded here so a reader of
+this ADR alone is not misled; full rationale is in
+[ADR-0002 — AI Theme-Generation Architecture](0002-ai-theme-generation-architecture.md).
+
+- **End-to-end tests — Playwright → WordPress Playground.** The realized end-to-end
+  harness is the headless WASM WordPress Playground gate (`src/harness/run.ts`,
+  `tests/e2e/`, `tests/harness/`), not Playwright. **Playwright is not a dependency** —
+  it is absent from `package.json`, no test imports it, and neither Vitest config uses
+  it. The brief's critical-path coverage is the Vitest + Playground full-pipeline test
+  (U11). The standalone constraint (no external service to run the app or its tests)
+  made the in-process WASM gate the better fit. See ADR-0002 CP-9.
+- **Default model tier resolved.** This ADR deferred the Opus-vs-Sonnet choice; it is
+  now Anthropic **`claude-sonnet-4-5`**, set in one line in `src/orchestration/provider.ts`
+  (`defaultModel()`). Rationale in ADR-0002 §3.1 and CP-14.
