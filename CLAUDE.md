@@ -2,7 +2,7 @@
 
 This file is the canonical project context for any AI coding agent (Claude Code, OpenClaw, Codex, Cursor) operating in this repo. Read it before doing anything else.
 
-> **About the name.** This repo lives in a folder called `Automattic` because the submission is evaluated by [**Automattic**](https://automattic.com) — the parent company of WordPress.com, Tumblr, WooCommerce, Pocket Casts, Day One, Simplenote, and most of the modern WordPress ecosystem. They are the Partner reviewing this Gauntlet AI Challenger submission. This repo is **not** an Automattic product; it's a portfolio piece authored by Jason Dijols. A specific product name for the deployed app is a TODO — see [Naming](#naming).
+> **About the name.** The product is named **Automattic** — a deliberate homage to [**Automattic**](https://automattic.com), the parent company of WordPress.com, Tumblr, WooCommerce, Pocket Casts, Day One, Simplenote, and most of the modern WordPress ecosystem, and the Partner reviewing this Gauntlet AI Challenger submission. This is a portfolio piece authored by Jason Dijols — **not** an Automattic product nor an official Automattic project; the name is a tribute, adopted as a conscious accepted tradeoff. See [Naming](#naming).
 
 ## What this project is
 
@@ -133,15 +133,13 @@ Key routing rules:
 
 ## Naming
 
-The repo folder and CLAUDE.md references currently use `Automattic` as a placeholder — that's the company evaluating this submission, not the product. Before any user-facing deployment (e.g., `<name>.vercel.app`), pick a real product name. Shipping the live app as "Automattic" would read poorly with reviewers from Automattic itself, and trademark-wise the name belongs to them regardless of how thin `automattic.com` is as a public product.
+**Decided: the product is named "Automattic."** It is a deliberate homage to [Automattic](https://automattic.com) — the parent of WordPress.com and the Partner evaluating this Gauntlet AI Challenger submission. The repo folder and the product's display name are both Automattic. This closes the earlier open TODO (which had floated generic candidates like Blocksmith, Strata, etc.); see ADR-0002 CP-24 for the decision record.
 
-**Candidate names (Claude's suggestions — pick one or invent your own):**
-- **Blocksmith** — forge of WordPress blocks. Memorable, on-domain, signals craft. *Recommended.*
-- **Blockwright** — block + wright (craftsperson). Slightly more elevated.
-- **Patternist** — emphasizes the WordPress block patterns angle.
-- **Strata** — themes as layered strata of blocks. Short, evocative.
+This is a conscious, accepted tradeoff, made with eyes open:
 
-When the final name is chosen, update this section and the deploy target. The repo folder rename is deferred until the name lands (renaming mid-flight breaks the gbrain project slug, memory paths, and any IDE/agent state pinned to the current path).
+- **It is an homage, not a claim.** This is a portfolio piece by Jason Dijols — not an Automattic product nor an official Automattic project. That disclaimer is stated plainly in the README and ADR-0002 so the name reads as a tribute to the evaluator, not as passing-off.
+- **Trademark.** "Automattic" is Automattic Inc.'s mark; it is used here as the project codename/homage for this submission only — no commercial use, no implication of endorsement. Any real public launch would revisit this.
+- **The npm package id stays descriptive.** `package.json` keeps `name: "wp-block-theme-generator"` (a valid, generic npm identifier); the *product/brand* name is Automattic, the *package* id is descriptive. No repo-folder rename is needed — which also avoids breaking the gbrain project slug, memory paths, and any IDE/agent state pinned to the current path.
 
 ## Notes on AI tool usage
 
