@@ -180,3 +180,40 @@ Prefer gbrain when:
 Grep is still right for known exact strings, regex, multiline patterns, and file globs. The brain auto-syncs incrementally on every gstack skill start. Run `/sync-gbrain` to force-refresh, `/sync-gbrain --full` for full reindex.
 
 <!-- gstack-gbrain-search-guidance:end -->
+
+## Library docs (Context7)
+
+Context7 is installed in **CLI + Skills mode** for both Cursor and Claude Code (`npx ctx7@latest setup` → `CLI + Skills`). The agent invokes it as shell commands; library docs arrive as text output, not MCP tool results.
+
+**Installed surfaces:**
+- `~/.cursor/skills/find-docs/SKILL.md` + `~/.cursor/rules/context7.mdc` (alwaysApply, Cursor)
+- `~/.claude/skills/find-docs/SKILL.md` + `~/.claude/rules/context7.md` (Claude Code)
+- `ctx7` is NOT globally installed — all invocations use `npx ctx7@latest <cmd>` per the rule. Optional: `npm install -g ctx7@latest` to skip the npx fetch overhead.
+
+**Why CLI over MCP for this workflow:** subagent reachability. CE adversarial personas (`ce-framework-docs-researcher`, `ce-best-practices-researcher`, etc.), gstack researchers, and parallel-dispatched subagents have Shell access universally but not always MCP. The CLI path is reachable from every subagent type; the MCP path was only reachable from MCP-enabled callers. Bonus: `ctx7` invocations go through Cursor's Shell tool, so `rtk gain` tracks them.
+
+**Two-step invocation** (per `find-docs` skill):
+```bash
+npx ctx7@latest library "<name>" "<user's question>"     # resolve → /org/project ID
+npx ctx7@latest docs /org/project "<user's question>"   # fetch docs for that ID
+```
+
+Library IDs are slash-form (`/wordpress/wordpress`, `/vercel/next.js`). Version-specific form: `/org/project/version`. Pass the user's **full question** as the query — single words return generic results.
+
+**Especially important for this project** (Gutenberg ships ~biweekly and the brief's disqualifying constraint is "no `wp:html` block, all output must be native block markup"):
+- WordPress block syntax (`wp:paragraph`, `wp:cover`, `wp:query`, `wp:post-featured-image`, etc.) — verify against current Gutenberg before generating
+- `theme.json` schema (v2 → v3 has live migrations) — never assume training-data field names
+- `@wordpress/blocks`, `@wordpress/block-editor` APIs when writing helper code
+- Whichever AI SDK we pick (Anthropic/OpenAI structured-output APIs shift between SDK versions)
+
+**Hard rule from the skill:** do not silently fall back to training data when Context7 fails (quota, network) — surface the failure to the user. Skip Context7 entirely for refactoring, debugging business logic, code review, or general programming concepts — it's a docs primitive, not a thinking primitive. Cap at 3 ctx7 calls per question.
+
+## Token efficiency (rtk)
+
+[`rtk`](https://github.com/rtk-ai/rtk) is installed (`brew install rtk`, v0.42+) with the Cursor `preToolUse` hook wired at `~/.cursor/hooks.json`. **It runs silently** — Cursor rewrites every Shell tool call to its `rtk` equivalent before execution (e.g. `git status` → `rtk git status`), returning compressed output (60–90% smaller on git, tests, lints, builds). No agent action required.
+
+Notes:
+- Hook only intercepts Cursor's **Shell** tool, not native `Read`/`Grep`/`Glob` — those bypass rtk.
+- Analytics: `rtk gain` (requires unsandboxed shell since DB lives at `~/Library/Application Support/rtk/`).
+- Compounds across CE adversarial-review pipelines and gstack `/ship`, `/qa`, `/review` — every persona/subagent that shells out benefits.
+- Uninstall: `rtk init -g --agent cursor --uninstall` then `brew uninstall rtk`.
