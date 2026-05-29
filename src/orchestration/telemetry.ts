@@ -90,9 +90,15 @@ const MAX_SANITIZE_DEPTH = 8;
 // (as in an error message or a URL query). Key-based redaction alone misses these.
 const BEARER_RE = /(bearer\s+)\S+/gi;
 const KV_SECRET_RE = /((?:authorization|api[-_]?key|token|secret|password)\s*[:=]\s*)\S+/gi;
+// Provider API-key shapes (Anthropic/OpenAI: `sk-ant-…`, `sk-…`) — redacted even
+// when they appear bare in a message with no preceding label.
+const KEY_SHAPE_RE = /sk-[a-z0-9-]{8,}/gi;
 
 function scrubString(value: string): string {
-  return value.replace(BEARER_RE, `$1${REDACTED}`).replace(KV_SECRET_RE, `$1${REDACTED}`);
+  return value
+    .replace(BEARER_RE, `$1${REDACTED}`)
+    .replace(KV_SECRET_RE, `$1${REDACTED}`)
+    .replace(KEY_SHAPE_RE, REDACTED);
 }
 
 /**
