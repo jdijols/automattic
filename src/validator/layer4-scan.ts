@@ -20,24 +20,13 @@
 import { isAllowedBlock } from "../blocks/allowlist";
 import { makeError, type ValidationError } from "./errors";
 import { wpParse, type BlockInstance } from "../assembler/wp-runtime";
+import { containsRawHtmlDelimiter } from "../assembler/wp-html-scan";
 
 /** One assembled file: its theme-relative path and its full text content. */
 export interface AssembledFile {
   path: string;
   content: string;
 }
-
-/** Whitespace + control/format characters stripped before sequence matching. */
-const STRIP = /[\s\p{Cc}\p{Cf}]/gu;
-
-/** Normalize for delimiter detection: drop whitespace/controls, case-fold. */
-function normalize(value: string): string {
-  return value.replace(STRIP, "").toLowerCase();
-}
-
-// The Custom HTML block delimiter in both its short and fully-qualified forms,
-// matched against the NORMALIZED bytes so evasions collapse to the same needle.
-const RAW_HTML_NEEDLES = ["<!--wp:html", "<!--wp:core/html"] as const;
 
 // Real core blocks the ASSEMBLER itself introduces during assembly — they are not
 // in the IR authoring allowlist (the IR cannot express them) but are legitimate,
@@ -90,21 +79,18 @@ export function scanAssembledArtifact(files: readonly AssembledFile[]): Validati
   for (const file of files) {
     if (!isScannedFile(file.path)) continue;
 
-    // 1. Byte scan for a raw Custom HTML block delimiter.
-    const norm = normalize(file.content);
-    for (const needle of RAW_HTML_NEEDLES) {
-      if (norm.includes(needle)) {
-        errors.push(
-          makeError({
-            code: "RAW_HTML_DETECTED",
-            layer: "assembled-artifact",
-            path: file.path,
-            message: `Assembled file '${file.path}' contains a raw Custom HTML block delimiter — the disqualifying constraint. No wp:html may appear in any output.`,
-            invariant: "wp-html",
-          }),
-        );
-        break; // one report per file is enough; the file is already rejected
-      }
+    // 1. Byte scan for a raw Custom HTML block delimiter (shared detector, so it
+    //    cannot drift from the U8 blob-integrity scan).
+    if (containsRawHtmlDelimiter(file.content)) {
+      errors.push(
+        makeError({
+          code: "RAW_HTML_DETECTED",
+          layer: "assembled-artifact",
+          path: file.path,
+          message: `Assembled file '${file.path}' contains a raw Custom HTML block delimiter — the disqualifying constraint. No wp:html may appear in any output.`,
+          invariant: "wp-html",
+        }),
+      );
     }
 
     // 2. Re-parse and confirm every block name resolves to the allowlist. This

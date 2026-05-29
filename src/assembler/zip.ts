@@ -22,7 +22,7 @@
 // ending surfaces as a golden diff rather than a silent regression.
 import JSZip from "jszip";
 
-import { assertSafeRelPath, assertSafeSlug } from "./escaping";
+import { assertSafeSlug, buildEntryPath } from "./escaping";
 import type { AssembledFile } from "../validator/layer4-scan";
 
 // A fixed point in time (post-1980 DOS epoch) stamped on every entry. The exact
@@ -50,16 +50,20 @@ export async function packZip(
 
   const zip = new JSZip();
 
-  // Sort by path so entry order (and thus the central directory) is deterministic
-  // regardless of the order the assembler produced the files in.
-  const sorted = [...files].sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+  // Compose + canonicalize every entry FIRST (path NFC-normalized, content NFC +
+  // LF), then sort by the FINAL entry name. Sorting before normalization could
+  // order entries by raw code points while writing them under normalized names —
+  // an NFC/NFD divergence would then reorder the central directory for the same
+  // logical theme. buildEntryPath validates the composed path for traversal.
+  const entries = files
+    .map((file) => ({
+      path: buildEntryPath(rootDir, file.path).normalize("NFC"),
+      content: normalizeText(file.content),
+    }))
+    .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 
-  for (const file of sorted) {
-    assertSafeRelPath(file.path);
-    const entryPath = `${rootDir}/${file.path}`.normalize("NFC");
-    // Defense in depth: re-validate the composed path too.
-    assertSafeRelPath(entryPath);
-    zip.file(entryPath, normalizeText(file.content), {
+  for (const entry of entries) {
+    zip.file(entry.path, entry.content, {
       date: FIXED_DATE,
       unixPermissions: FILE_MODE,
       // No implicit folder entries — they would carry a generation-time date.

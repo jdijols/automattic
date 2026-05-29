@@ -43,6 +43,39 @@ describe("assembleThemeFiles — minimum valid theme", () => {
     expect(files.has("templates/home.html")).toBe(true);
     expect(files.has("templates/index.html")).toBe(true);
   });
+
+  it("does NOT serve a 404 template as the home page (uses the minimal index fallback)", () => {
+    const ir = loadIR("blog");
+    const only404: IR = {
+      ...ir,
+      regions: [
+        {
+          kind: "template",
+          name: "404",
+          content: [{ block: "core/heading", nodeKind: "static", text: "Lost in space" }],
+        },
+      ],
+    };
+    const files = fileMap(assembleThemeFiles(only404));
+    expect(files.get("templates/404.html")).toContain("Lost in space");
+    // index.html falls back to the minimal posts index, NOT the 404 content.
+    expect(files.get("templates/index.html")).toContain("wp:query");
+    expect(files.get("templates/index.html")).not.toContain("Lost in space");
+  });
+});
+
+describe("assembleThemeFiles — fail-closed on duplicate paths", () => {
+  it("throws when two regions map to the same file (non-unique regions)", () => {
+    const ir = loadIR("blog");
+    const dup: IR = {
+      ...ir,
+      regions: [
+        { kind: "template", name: "index", content: [{ block: "core/paragraph", nodeKind: "static", text: "A" }] },
+        { kind: "template", name: "index", content: [{ block: "core/paragraph", nodeKind: "static", text: "B" }] },
+      ],
+    };
+    expect(() => assembleThemeFiles(dup)).toThrow(/duplicate region/i);
+  });
 });
 
 describe("assembleThemeFiles — pattern expansion + nav provisioning", () => {

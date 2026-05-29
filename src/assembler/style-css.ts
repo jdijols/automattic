@@ -41,7 +41,10 @@ export function buildStyleCss(theme: ThemeHeader): string {
   lines.push(`Requires at least: ${REQUIRES_WP}`);
   lines.push(`Tested up to: ${TESTED_WP}`);
   lines.push(`Requires PHP: ${REQUIRES_PHP}`);
-  lines.push(`Text Domain: ${theme.slug}`);
+  // The slug is charset-validated upstream (assertSafeSlug), but sanitize here
+  // too so this function owns its header-safety claim rather than relying on call
+  // order — a defense-in-depth no-op for a valid slug.
+  lines.push(`Text Domain: ${sanitizeHeaderValue(theme.slug)}`);
   lines.push("*/");
   // Join with LF and end with a trailing newline (deterministic, byte-stable).
   return lines.join("\n") + "\n";

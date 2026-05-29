@@ -179,7 +179,10 @@ export function assembleThemeFiles(ir: IR): AssembledFile[] {
   //        provisioning.
   const emitter = new PatternEmitter(themeSlug);
   const templateMarkup = new Map<string, string>();
-  let firstTemplateMarkup: string | undefined;
+  // The first content-bearing template to fall back to for index.html. A 404 is
+  // explicitly NOT index-eligible — copying it would serve "page not found" as the
+  // site home. header/footer are parts, not templates, so they never appear here.
+  let firstContentTemplateMarkup: string | undefined;
 
   for (const region of ir.regions) {
     const chunks = region.content.map((node) => {
@@ -199,22 +202,38 @@ export function assembleThemeFiles(ir: IR): AssembledFile[] {
       const path = `templates/${region.name}.html`;
       files.push({ path, content: markup });
       templateMarkup.set(region.name, markup);
-      firstTemplateMarkup ??= markup;
+      if (region.name !== "404") firstContentTemplateMarkup ??= markup;
     } else {
       files.push({ path: `parts/${region.name}.html`, content: markup });
     }
   }
 
   // 4. Guarantee templates/index.html — the file that makes wp_is_block_theme()
-  //    true. Prefer an authored index; else fall back to home, then the first
-  //    template region, then a minimal posts index.
+  //    true. Prefer an authored index; else home; else the first content-bearing
+  //    template (never a 404); else a minimal posts index.
   if (!templateMarkup.has("index")) {
-    const source = templateMarkup.get("home") ?? firstTemplateMarkup ?? fallbackIndexMarkup();
+    const source =
+      templateMarkup.get("home") ?? firstContentTemplateMarkup ?? fallbackIndexMarkup();
     files.push({ path: "templates/index.html", content: source });
   }
 
   // Pattern files last (order is irrelevant — packZip sorts).
   files.push(...emitter.files());
+
+  // Defense in depth: the assembler trusts a validated IR (layer-2b rejects
+  // duplicate regions via REGION_NOT_UNIQUE), but a caller that assembles a
+  // schema-parsed-but-not-fully-validated IR could still produce two regions that
+  // map to the same path. JSZip would silently keep only the last — a fail-OPEN
+  // content drop. Fail closed instead.
+  const seenPaths = new Set<string>();
+  for (const file of files) {
+    if (seenPaths.has(file.path)) {
+      throw new Error(
+        `Assembler produced two files at '${file.path}' — duplicate region/pattern path (the IR likely has non-unique regions).`,
+      );
+    }
+    seenPaths.add(file.path);
+  }
 
   // 5. Layer-4 scan: fail closed on any finding.
   const errors = scanAssembledArtifact(files);

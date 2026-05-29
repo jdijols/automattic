@@ -43,6 +43,7 @@ import {
   type ScalarBounds,
   type SlotDeclaration,
 } from "./pattern-library";
+import { containsRawHtmlDelimiter, normalizeForScan } from "./wp-html-scan";
 import { wpParse, wpSerialize, type BlockInstance } from "./wp-runtime";
 
 /** Raised when a param value or blob fails a substitution-time safety/bounds check. */
@@ -54,14 +55,11 @@ export class PatternSubstitutionError extends Error {
 }
 
 // --- normalization + forbidden-sequence detection (shared by params + blob) ---
-
-/** Whitespace + control/format characters stripped before sequence matching. */
-const STRIP = /[\s\p{Cc}\p{Cf}]/gu;
-
-/** Normalize for sequence detection: drop whitespace/controls, case-fold. */
-function normalize(value: string): string {
-  return value.replace(STRIP, "").toLowerCase();
-}
+//
+// The normalization rule and the raw-wp:html delimiter list live in
+// ./wp-html-scan so this scan and U9's layer-4 byte scan cannot drift. The
+// PHP/block-delimiter forbidden list below is broader (it also rejects PHP and
+// any block-open) and is specific to the substitution path, so it stays local.
 
 // Forbidden substrings, matched against the NORMALIZED string. PHP delimiters are
 // the RCE vector (patterns become require'd patterns/*.php); block-delimiter
@@ -81,7 +79,7 @@ const FORBIDDEN_NORMALIZED = [
  * blob-integrity scan. `where` names the source for the error message.
  */
 function assertNoForbiddenSequences(value: string, where: string): void {
-  const norm = normalize(value);
+  const norm = normalizeForScan(value);
   for (const needle of FORBIDDEN_NORMALIZED) {
     if (norm.includes(needle)) {
       throw new PatternSubstitutionError(
@@ -102,20 +100,17 @@ function assertNoForbiddenSequences(value: string, where: string): void {
  * pattern-manifest.ts) asserted in CI so a modified blob in a PR is visible.
  */
 export function scanBlobIntegrity(blob: string, slug: string): void {
-  const norm = normalize(blob);
   // The blob legitimately contains `<!--wp:` for every real block, so we cannot
   // reject that wholesale. We reject the disqualifying Custom HTML block in both
-  // the short (`<!-- wp:html`) and fully-qualified (`<!-- wp:core/html`) delimiter
-  // forms — matching U9's layer-4 scan intent — plus PHP delimiters, which a valid
-  // native blob never contains. Targeting the DELIMITER form (not a bare `wp:html`
-  // substring) avoids false-positives on legitimate prose that mentions the block.
-  for (const needle of ["<!--wp:html", "<!--wp:core/html"] as const) {
-    if (norm.includes(needle)) {
-      throw new PatternSubstitutionError(
-        `Pattern blob '${slug}' failed the integrity scan: contains a raw wp:html block delimiter.`,
-      );
-    }
+  // its short and fully-qualified delimiter forms via the SHARED detector (so this
+  // gate and U9's layer-4 scan can never disagree), plus PHP delimiters, which a
+  // valid native blob never contains.
+  if (containsRawHtmlDelimiter(blob)) {
+    throw new PatternSubstitutionError(
+      `Pattern blob '${slug}' failed the integrity scan: contains a raw wp:html block delimiter.`,
+    );
   }
+  const norm = normalizeForScan(blob);
   for (const needle of ["<?php", "<?=", "?>"] as const) {
     if (norm.includes(needle)) {
       throw new PatternSubstitutionError(
@@ -338,9 +333,8 @@ export function applyPattern(
   // must never contain a raw Custom HTML block delimiter. Per-kind escaping +
   // Gutenberg's delimiter encoding already prevent this, but the hard constraint
   // is release-blocking, so we enforce it at this boundary too (not only at U9's
-  // post-assembly layer-4 scan). Match the delimiter form, normalized.
-  const normOut = normalize(output);
-  if (normOut.includes("<!--wp:html") || normOut.includes("<!--wp:core/html")) {
+  // post-assembly layer-4 scan), via the shared detector.
+  if (containsRawHtmlDelimiter(output)) {
     throw new PatternSubstitutionError(
       `Substituted output for pattern '${meta.name}' contains a raw wp:html block delimiter — refusing to emit.`,
     );
