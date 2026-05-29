@@ -15,9 +15,11 @@ jobs:
     name: Fast gate (lint + typecheck + unit tests)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # actions/checkout + setup-node pinned to @v5 — the @v4 line runs on the
+      # deprecated Node-20 actions runtime (a GitHub deprecation warning today).
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -30,7 +32,10 @@ jobs:
 
       - run: npm run typecheck
 
+      # The fast unit suite — milliseconds, no WordPress. Includes the §5.3
+      # adversarial corpus AND the pattern-blob SHA-256 manifest assertion
+      # (a modified docs/pattern-library/**/pattern.html fails here, since the
+      # blobs are trusted inputs to the assembler). The slow Playground gate is a
+      # separate, path-filtered workflow (ci-playground.yml).
       - run: npm test
-    # NOTE: The Anthropic key is NOT needed by this fast gate (no live AI calls
-    # in unit tests). The slow Playground job added in U11 will inject
-    # ANTHROPIC_API_KEY from masked repository secrets — never echoed to logs.
+    # NOTE: no Anthropic key is needed here (no live AI calls in unit tests).
