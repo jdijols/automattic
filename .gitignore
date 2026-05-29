@@ -61,3 +61,6 @@ __pycache__/
 .venv/
 .pytest_cache/
 .gbrain-source
+
+# gbrain local code-index source state (machine-local; never committed)
+.sources/

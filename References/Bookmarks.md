@@ -1,5 +1,7 @@
 Wordpress:
 
+[https://automattic.com/](https://wordpress.org/)  
+[https://automattic.com/about/](https://automattic.com/about/)  
 [https://wordpress.com/](https://wordpress.org/)  
 [https://wordpress.org/](https://wordpress.org/)  
 [https://wordpress.org/documentation/article/first-steps-with-wordpress-block-editor/](https://wordpress.org/documentation/article/first-steps-with-wordpress-block-editor/)  

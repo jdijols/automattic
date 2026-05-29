@@ -31,7 +31,7 @@ End to end, a request flows through four seams:
 - **The disqualifying `wp:html` constraint** is enforced in depth at five independent points (allowlist, validator layers, two shared-detector byte scans, render-time assertion) — it is not weakenable.
 - **Determinism:** STORE (not DEFLATE) zip compression, fixed timestamps, NFC/LF normalization, a committed golden `.zip` asserted byte-for-byte in CI.
 
-**Current status (honest):** The orchestration spine, the validator, the assembler, the byte-reproducible zip, and the Playground gate all exist and are tested. **The HTTP route currently returns the validated IR as JSON; it does not yet call the assembler or return a downloadable `.zip`.** All three downstream pieces (assembler, zip packaging, install gate) are verified independently but are not yet wired at the HTTP boundary. There is also no front-end input UI yet (Track 4 is unbuilt — the server seam exists, the form does not). The C-single vs. C-decomposed generation arm is not locked: the §3.6 first-try-success experiment (issue #23) awaits a real-provider run, and C-single — the guaranteed-correct floor — is the current default. The product name is a placeholder TODO. These are tracked next steps, indexed in §8 and detailed in [`docs/what-id-do-next.md`](../what-id-do-next.md).
+**Current status (honest):** The orchestration spine, the validator, the assembler, the byte-reproducible zip, and the Playground gate all exist and are tested. **The HTTP route currently returns the validated IR as JSON; it does not yet call the assembler or return a downloadable `.zip`.** All three downstream pieces (assembler, zip packaging, install gate) are verified independently but are not yet wired at the HTTP boundary. There is also no front-end input UI yet (Track 4 is unbuilt — the server seam exists, the form does not). The C-single vs. C-decomposed generation arm is not locked: the §3.6 first-try-success experiment (issue #23) awaits a real-provider run, and C-single — the guaranteed-correct floor — is the current default. These are tracked next steps, indexed in §8 and detailed in [`docs/what-id-do-next.md`](../what-id-do-next.md). (The product name is settled — "Automattic" as homage — see CP-24.)
 
 ---
 
@@ -176,6 +176,12 @@ This is the narrative spine. Each checkpoint gives **Context → Decision → Wh
 - **Context:** A public HTTP endpoint that spends provider budget per request is a cost-DoS and credential-exposure surface.
 - **Decision:** Four guards in `src/orchestration/limits.ts`, applied in order before any provider call — rate limiter (30 req/min/client, bounded key map), input-length cap (4000 chars), structured-criteria validation, spend guard (fails closed, refunds on transient error). The credential is read server-side only by the SDK and is scrubbed from any error before logging.
 - **Why:** A crafted always-rejecting description otherwise drains budget; an unbounded key map is itself a memory-DoS. Deep-dive in **§6.4**. Realized in `src/orchestration/limits.ts` and `app/api/generate/route.ts`.
+
+### CP-24 — Product name: "Automattic" as homage (2026-05-29)
+
+- **Context:** The product name had been an open TODO, with generic candidates (Blocksmith, Strata, …) and an earlier note flagging that shipping under "Automattic" could read as a trademark/optics risk with the evaluator.
+- **Decision:** Name the product **Automattic** — a deliberate homage to the evaluating Partner — and close the TODO. State plainly (README, this ADR, `CLAUDE.md`) that it is a portfolio piece, *not* an Automattic product or official project; keep the npm package id descriptive (`wp-block-theme-generator`); no repo-folder rename.
+- **Why:** The earlier optics concern is resolved by framing, not avoidance — an explicit "homage, not affiliation" disclaimer makes the name a tribute rather than passing-off, with no commercial use and no claim of endorsement. Accepted as a conscious tradeoff (the author's call); any real public launch would revisit it. Supersedes the "pick a real name" guidance in `CLAUDE.md`'s Naming section.
 
 ---
 
@@ -403,5 +409,3 @@ This is the architectural-status snapshot: what is built, and which decisions re
 4. **WP-version coverage (Q9).** Single pinned WP 6.6 target accepted for the MVP; escalation to a CI version matrix is gated on real cross-version `save()`-invalidation data (the hand-authored pattern blobs are equally subject to that drift as the gap-filler serializer).
 
 5. **Reserved-but-unwired error code.** `HEADING_OUTLINE` exists in the frozen 20-code enum with reprompt guidance but no producer (CP-8). Either wire a heading-outline check at layer 2b or formally retire the code at the next contract revision, so the contract and the implementation agree.
-
-6. **Product name is a placeholder.** `package.json` `name` is `wp-block-theme-generator`; the UI renders "WordPress Block Theme Generator". Candidates exist (Blocksmith recommended) but none is chosen; shipping a live deployment under the Automattic name would read poorly with Automattic reviewers and is a trademark concern. The rename is deferred pending selection (it also breaks the gbrain project slug and memory paths mid-flight).
