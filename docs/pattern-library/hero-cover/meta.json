@@ -30,6 +30,90 @@
   "parameterizationRules": [
     "dimRatio is CONDITIONAL on whether a background image is set. With an image: 50-60 (darkens the image for text legibility). With NO image (solid-color hero): 100 (full opacity so the overlay color shows solid). Confirmed via Playground 2026-05-27 — dimRatio 60 with no image renders a washed translucent gray, not a solid hero. The AI must set dimRatio based on the image slot, not freely."
   ],
+  "slots": {
+    "headingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "paragraphText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "primaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2, 0], "attribute": "text" }
+    },
+    "primaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 2, 0], "attribute": "url" }
+    },
+    "secondaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2, 1], "attribute": "text" }
+    },
+    "secondaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 2, 1], "attribute": "url" }
+    },
+    "overlayColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "overlayColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "headingColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "paragraphColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 1], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "headingFontSize": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 0], "attribute": "fontSize" },
+      "bounds": { "vocab": "fontSize" }
+    },
+    "primaryButtonBackground": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 2, 0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "primaryButtonTextColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 2, 0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "backgroundImage": {
+      "kind": "url",
+      "target": { "blockPath": [0], "attribute": "url" }
+    },
+    "dimRatio": {
+      "kind": "scalar",
+      "target": { "blockPath": [0], "attribute": "dimRatio" },
+      "bounds": { "min": 0, "max": 100 }
+    },
+    "minHeight": {
+      "kind": "scalar",
+      "target": { "blockPath": [0], "attribute": "minHeight" },
+      "bounds": { "min": 30, "max": 100 }
+    },
+    "contentWidth": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0], "attribute": "layout.contentSize" },
+      "bounds": { "enum": ["480px", "560px", "680px", "800px", "960px"] }
+    }
+  },
+  "slotRules": [
+    {
+      "type": "dimRatioImageDependency",
+      "dimRatioSlot": "dimRatio",
+      "imageSlot": "backgroundImage",
+      "withImage": { "min": 40, "max": 70 },
+      "withoutImage": { "min": 100, "max": 100 }
+    }
+  ],
   "compositionRules": {
     "occursOncePerPage": true,
     "validTemplates": ["front-page", "home", "page"],

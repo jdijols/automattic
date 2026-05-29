@@ -29,6 +29,59 @@
     "headings here are h3 (footer is low in the document outline — never h1/h2)",
     "site-title uses level:0 (renders as a non-heading span, correct for footer chrome)"
   ],
+  "slots": {
+    "taglineText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0, 1], "attribute": "content" }
+    },
+    "exploreHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1, 0], "attribute": "content" }
+    },
+    "followHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2, 0], "attribute": "content" }
+    },
+    "copyrightText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1], "attribute": "content" }
+    },
+    "social1Url": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 2, 1, 0], "attribute": "url" }
+    },
+    "social2Url": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 2, 1, 1], "attribute": "url" }
+    },
+    "social3Url": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 2, 1, 2], "attribute": "url" }
+    },
+    "backgroundColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "textColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "navigationOrientation": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0, 1, 1], "attribute": "layout.orientation" },
+      "bounds": { "enum": ["vertical", "horizontal"] }
+    },
+    "socialLinksStyle": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0, 2, 1], "attribute": "className" },
+      "bounds": { "enum": ["is-style-logos-only", "is-style-default", "is-style-pill-shape"] }
+    }
+  },
+  "siteData": {
+    "navigation": [{ "blockPath": [0, 0, 1, 1], "fallback": "page-list" }]
+  },
   "compositionRules": {
     "occursOncePerPage": true,
     "validTemplates": ["ALL — footer is a template part shared across templates"],

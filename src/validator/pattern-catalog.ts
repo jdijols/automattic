@@ -2,98 +2,48 @@
 // resolve a patternRef's slug to a known pattern and (b) check that each param's
 // `kind` matches the pattern's declared slot kind.
 //
-// SCOPE NOTE: the param slot KINDS below are the frozen-contract piece (a
-// tokenRef slot must receive a tokenRef param, etc.) and mirror each seed
-// pattern's `parameterizable` categories in docs/pattern-library/*/meta.json.
-// The slot NAMES are provisional — the slot→block-attribute TARGETING convention
-// (where in pattern.html each slot writes) is U8/#8's back-fill and is NOT
-// decided here. Undeclared slots are permitted in Phase A (not yet constrained);
-// U8 fully validates slots against the back-filled meta.json.
+// SINGLE SOURCE OF TRUTH: the catalog is now DERIVED from the back-filled
+// docs/pattern-library/*/meta.json `slots` maps (U8/#8). Before U8 the slot names
+// and kinds were hand-maintained here as a provisional stand-in; now the
+// meta.json targeting back-fill exists, both this validator view and the
+// assembler's substitution read the same declarations, so the two cannot drift.
+// The param-`kind` discriminator remains the frozen-contract piece (a tokenRef
+// slot must receive a tokenRef param, etc.); the slot→block-attribute targeting
+// detail lives in meta.json and is consumed by src/assembler/patterns.ts.
+import {
+  getPatternMeta,
+  PATTERN_SLUGS,
+  patternSlotKinds,
+  type ParamKind,
+} from "../assembler/pattern-library";
 import { type AllowedBlockName } from "../blocks/allowlist";
 
-export type ParamKind = "tokenRef" | "text" | "url" | "scalar";
+export type { ParamKind };
 
 interface PatternCatalogEntry {
   region: string;
   validRegions: string[];
   blocksUsed: AllowedBlockName[];
-  /** slotName → expected param kind. */
+  /** slotName → expected param kind (derived from meta.json `slots`). */
   paramSlots: Record<string, ParamKind>;
 }
 
-export const PATTERN_CATALOG: Record<string, PatternCatalogEntry> = {
-  "hero-cover": {
-    region: "hero",
-    validRegions: ["hero", "page-top"],
-    blocksUsed: [
-      "core/cover",
-      "core/group",
-      "core/heading",
-      "core/paragraph",
-      "core/buttons",
-      "core/button",
-    ],
-    paramSlots: {
-      heading: "text",
-      paragraph: "text",
-      primaryButtonText: "text",
-      primaryButtonUrl: "url",
-      secondaryButtonText: "text",
-      secondaryButtonUrl: "url",
-      overlayColor: "tokenRef",
-      textColor: "tokenRef",
-      buttonBackgroundColor: "tokenRef",
-      backgroundImage: "url",
-      dimRatio: "scalar",
-      minHeight: "scalar",
-    },
-  },
-  "query-loop-list": {
-    region: "content",
-    validRegions: ["content", "home-feed", "archive-feed"],
-    blocksUsed: [
-      "core/group",
-      "core/heading",
-      "core/query",
-      "core/post-template",
-      "core/post-featured-image",
-      "core/post-title",
-      "core/post-date",
-      "core/post-excerpt",
-      "core/query-pagination",
-      "core/query-pagination-previous",
-      "core/query-pagination-numbers",
-      "core/query-pagination-next",
-    ],
-    paramSlots: {
-      sectionHeading: "text",
-      backgroundColor: "tokenRef",
-      perPage: "scalar",
-      postType: "scalar",
-    },
-  },
-  "site-footer": {
-    region: "footer",
-    validRegions: ["footer"],
-    blocksUsed: [
-      "core/group",
-      "core/columns",
-      "core/column",
-      "core/site-title",
-      "core/paragraph",
-      "core/heading",
-      "core/navigation",
-      "core/social-links",
-      "core/social-link",
-    ],
-    paramSlots: {
-      tagline: "text",
-      copyright: "text",
-      backgroundColor: "tokenRef",
-      textColor: "tokenRef",
-    },
-  },
-};
+function buildCatalog(): Record<string, PatternCatalogEntry> {
+  const catalog: Record<string, PatternCatalogEntry> = {};
+  for (const slug of PATTERN_SLUGS) {
+    const meta = getPatternMeta(slug);
+    if (!meta) continue;
+    catalog[slug] = {
+      region: meta.region,
+      validRegions: meta.validRegions,
+      blocksUsed: meta.blocksUsed,
+      paramSlots: patternSlotKinds(slug),
+    };
+  }
+  return catalog;
+}
+
+export const PATTERN_CATALOG: Record<string, PatternCatalogEntry> = buildCatalog();
 
 export function isKnownPattern(name: string): boolean {
   return Object.prototype.hasOwnProperty.call(PATTERN_CATALOG, name);
