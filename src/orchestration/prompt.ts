@@ -50,6 +50,13 @@ export interface BuildPromptInput {
   userDescription: string;
   /** Optional typed criteria (color palette, typography, site type). */
   criteria?: StructuredCriteria;
+  /**
+   * Optional retry-correction suffix (T3-U4). Appended AFTER the data slots so
+   * the byte-stable system prefix is unchanged across retries (the cache stays
+   * warm). The correction is Track-3-built instruction text whose user-derived
+   * fragments (path/hint) are already sanitized by `reprompt.ts`.
+   */
+  correction?: string;
 }
 
 export interface BuiltPrompt {
@@ -59,8 +66,12 @@ export interface BuiltPrompt {
   prompt: string;
 }
 
-/** HTML-encode so no angle-bracket sequence in user text can forge a tag. */
-function encodeUserText(text: string): string {
+/**
+ * HTML-encode `&`, `<`, `>` so no angle-bracket sequence can forge a tag or a
+ * block-comment / PHP delimiter. Used for the user-description slot and for
+ * sanitizing user-data-derived re-prompt fragments (T3-U4 path/hint).
+ */
+export function htmlEncode(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -76,14 +87,15 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     throw new Error("Invalid structured criteria: each field must match the typed schema (enum/hex/font-name).");
   }
 
+  const correction = input.correction ? `\n${input.correction}\n` : "";
   const prompt = `<user_description>
-${encodeUserText(input.userDescription)}
+${htmlEncode(input.userDescription)}
 </user_description>
 
 <structured_criteria>
 ${JSON.stringify(parsed.data)}
 </structured_criteria>
-
+${correction}
 Emit only the IR object.`;
 
   return { system: buildContextPrefix(), prompt };
