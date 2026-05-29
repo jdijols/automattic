@@ -11,10 +11,10 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts", "src/**/*.test.ts"],
-    // The slow gates run separately, not in the fast unit gate:
-    //   - tests/harness/** — WordPress Playground install/activate (U10), via
-    //     `npm run test:slow` (vitest.slow.config.ts).
-    //   - tests/e2e/** — Playwright end-to-end, added in U11.
+    // The slow gates run separately, not in the fast unit gate (both boot WASM
+    // WordPress; run via `npm run test:slow` / vitest.slow.config.ts):
+    //   - tests/harness/** — Playground install/activate assertions (U10).
+    //   - tests/e2e/**     — Playground full-pipeline integration test (U11).
     exclude: ["tests/harness/**", "tests/e2e/**", "node_modules/**", ".next/**"],
     server: {
       deps: {

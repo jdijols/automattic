@@ -1,0 +1,71 @@
+name: Playground gate
+
+# The SLOW outer gate (U10/U11): boots a headless WASM WordPress (pinned WP 6.6 /
+# PHP 8.2), installs the assembled .zip, and runs the four runPHP assertions plus
+# the full end-to-end pipeline test. It takes tens of seconds, so it is split out
+# from the fast gate and triggered ONLY on PRs that can affect generated-theme
+# correctness or the gate itself — a docs-only PR runs the fast gate alone.
+#
+# Headless WASM, not a browser: the harness drives PHP directly via
+# @wp-playground/cli, so there is no Playwright / `npx playwright install` step.
+#
+# REQUIRED-CHECK CAVEAT: because the pull_request trigger is `paths`-filtered,
+# this workflow does NOT run on a PR that touches none of those paths (e.g. a
+# docs-only PR). Do NOT add this job to branch-protection "required status checks"
+# as-is — GitHub would wait forever for a status that never reports, blocking the
+# merge. The fast gate (ci.yml, all PRs) is the required check; this is an
+# additional confidence gate on theme-affecting changes.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "src/assembler/**"
+      - "src/blocks/**"
+      - "src/ir/**"
+      - "src/validator/**"
+      - "src/themejson/**"
+      - "src/harness/**"
+      - "fixtures/**"
+      - "docs/pattern-library/**"
+      - "tests/harness/**"
+      - "tests/e2e/**"
+      - "vitest.slow.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/ci-playground.yml"
+
+concurrency:
+  group: ci-playground-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playground:
+    name: Slow gate (WordPress Playground install/activate + e2e)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Cache the downloaded WP 6.6 / PHP 8.2 runtime so reruns avoid the network
+      # fetch (the slowest, flakiest part of a cold boot).
+      # Cache the WP/PHP runtime + per-version site dirs. The version segment
+      # mirrors the pins in src/harness/run.ts (WP_VERSION/PHP_VERSION); the
+      # restore-keys prefix lets a stale-version cache still seed a partial
+      # restore. Playground namespaces its on-disk site dir by version, so a
+      # mismatched cache is harmless (it just re-fetches the new version).
+      - name: Cache WordPress Playground runtime
+        uses: actions/cache@v4
+        with:
+          path: ~/.wordpress-playground
+          key: wp-playground-wp6.6-php8.2-${{ runner.os }}
+          restore-keys: |
+            wp-playground-
+
+      - run: npm run test:slow
