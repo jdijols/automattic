@@ -90,9 +90,12 @@ describe("layer 2a — per-node structural validation", () => {
   });
 
   it("rejects a param whose kind mismatches the pattern's declared slot kind", () => {
+    // `headingText` is a text slot in hero-cover's meta.json; a tokenRef param mismatches.
     const errors = layer2a(
       parsed(
-        wrapNodes([{ pattern: "hero-cover", params: { heading: { kind: "tokenRef", value: "base" } } }]),
+        wrapNodes([
+          { pattern: "hero-cover", params: { headingText: { kind: "tokenRef", value: "base" } } },
+        ]),
       ),
     );
     expect(errors.some((e) => e.code === "PATTERN_PARAM_KIND_MISMATCH")).toBe(true);
