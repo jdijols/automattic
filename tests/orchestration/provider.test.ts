@@ -83,23 +83,27 @@ describe("provider seam (T3-U1)", () => {
   });
 
   describe("every call sets the R8 boundary obligations", () => {
-    it("forwards max_tokens, a timeout-derived abort signal, structuredOutputMode and 5m caching", async () => {
+    it("forwards max_tokens, a timeout abort signal, structuredOutputMode, and a 5m breakpoint on the system prefix", async () => {
       const m = model(JSON.stringify(VALID_IR));
-      await generateStructured(irGenerationSchema, { prompt: "x", model: m });
+      await generateStructured(irGenerationSchema, { system: "PREFIX", prompt: "x", model: m });
 
       const call = m.doGenerateCalls[0];
       expect(call).toBeDefined();
       expect(call!.maxOutputTokens).toBe(MAX_OUTPUT_TOKENS);
       expect(call!.abortSignal).toBeInstanceOf(AbortSignal); // timeout wires an abort signal
+      // structuredOutputMode is a call-level provider option …
       expect(call!.providerOptions?.anthropic).toMatchObject({
         structuredOutputMode: DEFAULT_STRUCTURED_OUTPUT_MODE,
-        cacheControl: CACHE_CONTROL_5M,
       });
+      // … but the cache breakpoint must sit on the SYSTEM message (block-level).
+      const system = call!.prompt.find((msg) => msg.role === "system");
+      expect(system?.providerOptions?.anthropic).toMatchObject({ cacheControl: CACHE_CONTROL_5M });
     });
 
-    it("caller-supplied anthropic provider options merge over the secure defaults", async () => {
+    it("caller-supplied anthropic provider options merge over the call-level defaults", async () => {
       const m = model(JSON.stringify(VALID_IR));
       await generateStructured(irGenerationSchema, {
+        system: "PREFIX",
         prompt: "x",
         model: m,
         maxOutputTokens: 1234,
@@ -107,10 +111,9 @@ describe("provider seam (T3-U1)", () => {
       });
       const call = m.doGenerateCalls[0];
       expect(call!.maxOutputTokens).toBe(1234);
-      expect(call!.providerOptions?.anthropic).toMatchObject({
-        structuredOutputMode: "jsonTool", // overridden
-        cacheControl: CACHE_CONTROL_5M, // default retained
-      });
+      expect(call!.providerOptions?.anthropic).toMatchObject({ structuredOutputMode: "jsonTool" }); // overridden
+      const system = call!.prompt.find((msg) => msg.role === "system");
+      expect(system?.providerOptions?.anthropic).toMatchObject({ cacheControl: CACHE_CONTROL_5M }); // breakpoint retained
     });
   });
 
