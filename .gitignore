@@ -29,6 +29,8 @@ out/
 generated/
 *.zip
 !References/*.zip
+# The committed golden .zip is the U9 byte-reproducibility oracle, asserted in CI.
+!src/assembler/golden/*.zip
 
 # Test coverage
 coverage/
