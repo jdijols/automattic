@@ -21,9 +21,17 @@ import { type IRValidated, type ValidationError, type ValidationResult } from ".
 
 import { type GenerateDeps, type GenerateInput, generateSingle } from "./generate";
 import { buildReprompt } from "./reprompt";
+import { NOOP_SINK, type TelemetrySink, escapeAttemptOf } from "./telemetry";
 
 /** Total attempts: 1 initial generation + 2 retries (origin §3.5 / Q12). */
 export const RETRY_BUDGET = 3;
+
+export interface RetryDeps extends GenerateDeps {
+  /** Injected telemetry sink (T3-U5). Defaults to a no-op — telemetry is optional. */
+  sink?: TelemetrySink;
+  /** Injectable monotonic clock (ms) for the latency metric; defaults to performance.now. */
+  now?: () => number;
+}
 
 export interface RetryOutcome {
   /** The final result: validated IR, or the legible §5.2 error list from the last attempt. */
@@ -35,9 +43,19 @@ export interface RetryOutcome {
 /**
  * Run the generation with bounded retries. Returns on the first success, or the
  * last attempt's legible error once the budget is exhausted — never a 4th call,
- * never an unvalidated object.
+ * never an unvalidated object. Emits the three §7.1 metrics through the injected
+ * sink: first-try-success (true only at attempt 1), an escape-attempt event per
+ * failed attempt carrying a release-blocking invariant, and a latency event
+ * (prompt-submit → IR-validated total, with the provider-inference share
+ * separated as the sum of per-attempt generation time).
  */
-export async function generateWithRetry(input: GenerateInput, deps: GenerateDeps = {}): Promise<RetryOutcome> {
+export async function generateWithRetry(input: GenerateInput, deps: RetryDeps = {}): Promise<RetryOutcome> {
+  const sink = deps.sink ?? NOOP_SINK;
+  const now = deps.now ?? (() => performance.now());
+  const generateDeps: GenerateDeps = { model: deps.model, sink };
+
+  const start = now();
+  let providerMs = 0;
   let lastErrors: ValidationError[] = [];
 
   for (let attempt = 1; attempt <= RETRY_BUDGET; attempt += 1) {
@@ -46,12 +64,22 @@ export async function generateWithRetry(input: GenerateInput, deps: GenerateDeps
     const correction =
       attempt === 1 ? undefined : buildReprompt(lastErrors, { patternOnly: attempt === RETRY_BUDGET });
 
-    const result = await generateSingle({ ...input, correction }, deps);
+    const attemptStart = now();
+    const result = await generateSingle({ ...input, correction }, generateDeps);
+    providerMs += now() - attemptStart;
+
     if (result.ok) {
+      sink.emit({ kind: "first-try-success", success: attempt === 1 });
+      sink.emit({ kind: "latency", totalMs: now() - start, providerMs, attempts: attempt });
       return { result, attempts: attempt };
     }
+
+    const escape = escapeAttemptOf(result.errors);
+    if (escape) sink.emit({ kind: "escape-attempt", invariant: escape.invariant, code: escape.code });
     lastErrors = result.errors;
   }
 
+  sink.emit({ kind: "first-try-success", success: false });
+  sink.emit({ kind: "latency", totalMs: now() - start, providerMs, attempts: RETRY_BUDGET });
   return { result: { ok: false, errors: lastErrors }, attempts: RETRY_BUDGET };
 }

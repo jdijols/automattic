@@ -36,12 +36,19 @@ import { makeError } from "../validator/errors";
 import { irGenerationSchema } from "./ir-views";
 import { type GenerateFailure, generateStructured } from "./provider";
 import { type BuildPromptInput, buildPrompt } from "./prompt";
+import { NOOP_SINK, type TelemetrySink, sanitizeCause } from "./telemetry";
 
 export type GenerateInput = BuildPromptInput;
 
 export interface GenerateDeps {
   /** Override the model (tests inject a mock). Defaults to the provider seam's Sonnet. */
   model?: LanguageModel;
+  /**
+   * Telemetry sink (T3-U5). This is the INGESTION POINT for a provider no-object
+   * failure: its `.cause` is sanitized here, before any event is emitted, so a
+   * credential in the cause can never reach telemetry — independent of T3-U10.
+   */
+  sink?: TelemetrySink;
 }
 
 /**
@@ -95,6 +102,12 @@ export async function generateSingle(
   });
 
   if (!outcome.ok) {
+    // Ingestion point: sanitize the provider cause BEFORE it reaches telemetry.
+    (deps.sink ?? NOOP_SINK).emit({
+      kind: "generation-failed",
+      finishReason: outcome.finishReason,
+      cause: sanitizeCause(outcome.cause),
+    });
     return malformedError(outcome);
   }
 

@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import { NoObjectGeneratedError } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
 import { describe, expect, it } from "vitest";
 
 import { generateSingle, repairJsonText } from "../../src/orchestration/generate";
+import { CollectingSink } from "../../src/orchestration/telemetry";
 
 // Real validator (layers 1–3 have landed) — no fake-validator stub.
 const blogInput = (): unknown => {
@@ -135,5 +137,35 @@ describe("generateSingle — C-single (T3-U3)", () => {
         ),
       ).rejects.toThrow(/criteria/i);
     });
+  });
+
+  it("sanitizes a NoObjectGeneratedError.cause at the telemetry ingestion point (no credential leaks)", async () => {
+    // A provider error whose cause carries an Authorization Bearer token.
+    const leaky = new MockLanguageModelV3({
+      doGenerate: async () => {
+        throw new NoObjectGeneratedError({
+          message: "no object",
+          cause: new Error("401: Authorization: Bearer sk-leak-abc123"),
+          text: "garbage",
+          response: { id: "r", modelId: "m", timestamp: new Date(0) },
+          usage: {
+            inputTokens: 1,
+            inputTokenDetails: { noCacheTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 },
+            outputTokens: 0,
+            outputTokenDetails: { textTokens: 0, reasoningTokens: 0 },
+            totalTokens: 1,
+          },
+          finishReason: "error",
+        });
+      },
+    });
+    const sink = new CollectingSink();
+    const result = await generateSingle(INPUT, { model: leaky, sink });
+
+    expect(result.ok).toBe(false); // surfaced as MALFORMED_INPUT, not thrown
+    const failure = sink.events.find((e) => e.kind === "generation-failed");
+    expect(failure).toBeDefined();
+    // The Bearer token must NOT survive into any emitted event.
+    expect(JSON.stringify(sink.events)).not.toContain("sk-leak-abc123");
   });
 });

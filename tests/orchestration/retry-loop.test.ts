@@ -5,6 +5,7 @@ import { MockLanguageModelV3 } from "ai/test";
 import { describe, expect, it } from "vitest";
 
 import { RETRY_BUDGET, generateWithRetry } from "../../src/orchestration/retry-loop";
+import { CollectingSink, type TelemetryEvent } from "../../src/orchestration/telemetry";
 
 const blogInput = (): unknown => {
   const blog = JSON.parse(
@@ -40,6 +41,12 @@ const HALLUCINATED = JSON.stringify({
   theme: { slug: "x-theme", title: "X" },
   tokens: {},
   regions: [{ kind: "template", name: "index", content: [{ block: "core/made-up" }] }],
+});
+const WP_HTML = JSON.stringify({
+  irVersion: 1,
+  theme: { slug: "x-theme", title: "X" },
+  tokens: {},
+  regions: [{ kind: "template", name: "index", content: [{ block: "core/html", attributes: {} }] }],
 });
 const HOSTILE_URL = JSON.stringify({
   irVersion: 1,
@@ -142,5 +149,64 @@ describe("generateWithRetry (T3-U4)", () => {
       expect(result.errors.some((e) => e.code === "ATTRIBUTE_UNSAFE_URL")).toBe(true);
       expect(result.errors.some((e) => e.code === "MALFORMED_INPUT")).toBe(false); // repair succeeded
     }
+  });
+});
+
+describe("generateWithRetry — telemetry (T3-U5)", () => {
+  const one = <K extends TelemetryEvent["kind"]>(sink: CollectingSink, kind: K): Extract<TelemetryEvent, { kind: K }> =>
+    sink.events.find((e) => e.kind === kind) as Extract<TelemetryEvent, { kind: K }>;
+
+  it("counts first-try-success at attempt 1 (true), and success-after-retry as false", async () => {
+    const win = new CollectingSink();
+    await generateWithRetry(INPUT, { model: sequenceModel([JSON.stringify(blogInput())]), sink: win });
+    expect(one(win, "first-try-success").success).toBe(true);
+
+    const afterRetry = new CollectingSink();
+    await generateWithRetry(INPUT, {
+      model: sequenceModel([HALLUCINATED, JSON.stringify(blogInput())]),
+      sink: afterRetry,
+    });
+    expect(one(afterRetry, "first-try-success").success).toBe(false);
+  });
+
+  it("emits an escape-attempt (wp-html) for a core/html rejection, but not for a plain containment error", async () => {
+    const escape = new CollectingSink();
+    await generateWithRetry(INPUT, { model: sequenceModel([WP_HTML]), sink: escape });
+    const events = escape.events.filter((e) => e.kind === "escape-attempt");
+    expect(events.length).toBeGreaterThanOrEqual(1);
+    expect(events[0]).toMatchObject({ kind: "escape-attempt", invariant: "wp-html" });
+
+    // HALLUCINATED → "hallucinated-block-name" IS an escape; a containment-only
+    // failure would not be. Verify the wp-html path is invariant-driven, not code-driven.
+    const plain = new CollectingSink();
+    await generateWithRetry(INPUT, { model: sequenceModel([HOSTILE_URL]), sink: plain }); // ATTRIBUTE_UNSAFE_URL, invariant null
+    expect(plain.events.some((e) => e.kind === "escape-attempt")).toBe(false);
+  });
+
+  it("emits a latency event with the provider-inference share strictly separated from total", async () => {
+    let t = 0;
+    const sink = new CollectingSink();
+    // Deterministic clock advancing 5ms/call: start=5, attemptStart=10, attemptEnd=15,
+    // totalEnd=20 → providerMs=5, totalMs=15. Provider share is a STRICT subset of total.
+    await generateWithRetry(INPUT, {
+      model: sequenceModel([JSON.stringify(blogInput())]),
+      sink,
+      now: () => (t += 5),
+    });
+    const latency = one(sink, "latency");
+    expect(latency.providerMs).toBe(5);
+    expect(latency.totalMs).toBe(15);
+    expect(latency.providerMs).toBeLessThan(latency.totalMs); // separation, not a duplicate of total
+    expect(latency.attempts).toBe(1);
+  });
+
+  it("exhaustion path (fail×3) emits exactly one first-try-success(false), one latency, and a hallucinated escape per attempt", async () => {
+    const sink = new CollectingSink();
+    await generateWithRetry(INPUT, { model: sequenceModel([HALLUCINATED]), sink });
+    expect(sink.events.filter((e) => e.kind === "first-try-success")).toEqual([{ kind: "first-try-success", success: false }]);
+    expect(sink.events.filter((e) => e.kind === "latency")).toHaveLength(1);
+    const escapes = sink.events.filter((e) => e.kind === "escape-attempt");
+    expect(escapes).toHaveLength(RETRY_BUDGET); // one per failed attempt
+    expect(escapes.every((e) => e.kind === "escape-attempt" && e.invariant === "hallucinated-block-name")).toBe(true);
   });
 });
