@@ -71,6 +71,12 @@ const URL_ATTRIBUTES: Partial<Record<AllowedBlockName, readonly string[]>> = {
   "core/button": ["url"],
   "core/social-link": ["url"],
   "core/image": ["url", "href"],
+  // media-text carries an image src (mediaUrl) plus an optional link (href when
+  // linkDestination is set, mediaLink for the attachment) — block.json types all
+  // three as plain strings, so the safe-scheme constraint is ours to enforce, the
+  // same as core/image. Without this an inline core/media-text IR node could
+  // smuggle a javascript: href past layer-2a.
+  "core/media-text": ["mediaUrl", "href", "mediaLink"],
 };
 
 /**

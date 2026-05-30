@@ -1,28 +1,26 @@
 import { describe, expect, it } from "vitest";
 
-import heroMeta from "../../docs/pattern-library/hero-cover/meta.json";
-import queryMeta from "../../docs/pattern-library/query-loop-list/meta.json";
-import footerMeta from "../../docs/pattern-library/site-footer/meta.json";
+import { getPatternMeta, PATTERN_SLUGS } from "../assembler/pattern-library";
 import { ALLOWLIST, isAllowedBlock } from "./allowlist";
 
 describe("allowlist", () => {
   it("is a closed set of unique block names", () => {
     expect(new Set(ALLOWLIST).size).toBe(ALLOWLIST.length);
-    // The MVP surface is the origin §4.1 union (~30 blocks).
-    expect(ALLOWLIST.length).toBe(32);
+    // The MVP surface is the origin §4.1 union, plus core/media-text (admitted
+    // for the dark editorial hero). Expansion is a deliberate, reviewed PR.
+    expect(ALLOWLIST.length).toBe(33);
   });
 
-  it("admits every block the 3 seed patterns use (drift guard)", () => {
-    const used = [
-      ...heroMeta.blocksUsed,
-      ...queryMeta.blocksUsed,
-      ...footerMeta.blocksUsed,
-    ];
-    for (const block of used) {
-      expect(
-        isAllowedBlock(block),
-        `seed pattern uses ${block} but it is not in the allowlist`,
-      ).toBe(true);
+  it("admits every block every catalog pattern uses (drift guard)", () => {
+    for (const slug of PATTERN_SLUGS) {
+      const meta = getPatternMeta(slug);
+      expect(meta, `missing meta.json for pattern ${slug}`).toBeDefined();
+      for (const block of meta!.blocksUsed) {
+        expect(
+          isAllowedBlock(block),
+          `pattern ${slug} uses ${block} but it is not in the allowlist`,
+        ).toBe(true);
+      }
     }
   });
 

@@ -27,6 +27,7 @@ export const ALLOWLIST = [
   "core/paragraph",
   "core/heading",
   "core/image",
+  "core/media-text",
   "core/list",
   "core/list-item",
   "core/quote",
