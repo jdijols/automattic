@@ -15,18 +15,27 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { irSchema } from "../src/ir/schema";
 
 const repo = (...s: string[]): string => resolve(process.cwd(), ...s);
 
-describe("assembler runs headless under the real Node runtime (#49 regression)", () => {
-  it("imports the assembler and produces a theme .zip without a jsdom test env", async () => {
-    // Dynamic import so the dom-bootstrap side effect runs inside the test (and a
-    // throw surfaces as a failing assertion, not an unhandled module-load error).
-    const { assembleThemeZip } = await import("../src/assembler/index");
+// Cold-import the heavy module ONCE here, not inside a per-test timer. Under the
+// default `node` env this triggers the real dom-bootstrap + @wordpress/blocks +
+// registerCoreBlocks load, which takes several seconds (every other assembler
+// test runs under jsdom, where the bootstrap is a no-op and never pays this
+// cost) and overran the 5s default per-test timeout. The import itself IS the
+// #49 regression assertion: before the defineProperty fix it threw at import on
+// Node >= 21 ("Cannot set property navigator ... which has only a getter").
+let assembleThemeZip: typeof import("../src/assembler/index").assembleThemeZip;
 
+beforeAll(async () => {
+  ({ assembleThemeZip } = await import("../src/assembler/index"));
+}, 60_000);
+
+describe("assembler runs headless under the real Node runtime (#49 regression)", () => {
+  it("produces a theme .zip without a jsdom test env", async () => {
     const fixture = JSON.parse(
       readFileSync(repo("fixtures/positive/blog/blog.json"), "utf8"),
     ) as { input: unknown };
@@ -38,7 +47,7 @@ describe("assembler runs headless under the real Node runtime (#49 regression)",
     expect(zip.byteLength).toBeGreaterThan(0);
     expect(zip[0]).toBe(0x50); // 'P'
     expect(zip[1]).toBe(0x4b); // 'K'
-  });
+  }, 30_000);
 
   it("synthesized a DOM on the real global (navigator defined, not thrown)", () => {
     // After the import above, the bootstrap has run. Under Node these globals are
