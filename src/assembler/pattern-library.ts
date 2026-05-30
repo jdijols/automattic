@@ -81,6 +81,7 @@ export const PATTERN_SLUGS = [
   "hero-portfolio-dark",
   "landing-hero",
   "magazine-index",
+  "pricing-table",
   "query-loop-list",
   "site-footer",
 ] as const;
