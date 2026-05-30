@@ -13,8 +13,13 @@ import {
 } from "./pattern-library";
 
 describe("pattern-library metadata loader", () => {
-  it("exposes the three seed pattern slugs", () => {
-    expect([...PATTERN_SLUGS].sort()).toEqual(["hero-cover", "query-loop-list", "site-footer"]);
+  it("exposes the curated pattern slugs", () => {
+    expect([...PATTERN_SLUGS].sort()).toEqual([
+      "hero-cover",
+      "hero-portfolio-dark",
+      "query-loop-list",
+      "site-footer",
+    ]);
   });
 
   it("loads a back-filled slot map with kind + target for hero-cover", () => {
