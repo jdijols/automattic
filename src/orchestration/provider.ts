@@ -26,7 +26,7 @@
 // This module reimplements no validation: it produces an UNVALIDATED candidate
 // (the generation view's inferred type). The candidate is gated by the Track-1
 // `validateIR` before it is ever returned or assembled (wired in T3-U3).
-import { anthropic, type AnthropicProviderOptions } from "@ai-sdk/anthropic";
+import { createAnthropic, type AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import {
   NoObjectGeneratedError,
   type FinishReason,
@@ -41,8 +41,25 @@ import type * as z from "zod";
 /** The provider swap point. Change this line to swap the default provider/model. */
 export const SONNET_MODEL_ID = "claude-sonnet-4-5";
 
+/**
+ * The canonical Anthropic REST base. PINNED explicitly (not left to the SDK
+ * default) so a stray `ANTHROPIC_BASE_URL` in the environment cannot silently
+ * break generation. The `@ai-sdk/anthropic` default IS this value — but when
+ * `ANTHROPIC_BASE_URL` is set, the SDK uses it verbatim as the full base. Tools
+ * like Claude for Desktop export `ANTHROPIC_BASE_URL=https://api.anthropic.com`
+ * (no `/v1`), so the SDK then calls `…/messages` instead of `…/v1/messages` and
+ * every request 404s → a generic 502 with no obvious cause. Passing an explicit
+ * `baseURL` to `createAnthropic` overrides that env var (verified empirically),
+ * making generation robust to a polluted local OR deployment environment. To
+ * point at a proxy / Vercel AI Gateway, change THIS constant (one line).
+ */
+export const ANTHROPIC_BASE_URL = "https://api.anthropic.com/v1";
+
+/** Provider factory with the base URL pinned (env-override-proof). */
+const provider = createAnthropic({ baseURL: ANTHROPIC_BASE_URL });
+
 /** The default model: Anthropic Sonnet. One-line swap (origin §4.1, ADR-0001). */
-export const defaultModel = (): LanguageModel => anthropic(SONNET_MODEL_ID);
+export const defaultModel = (): LanguageModel => provider(SONNET_MODEL_ID);
 
 /** Bounded output — the R8 obligation; never an unbounded generation. */
 export const MAX_OUTPUT_TOKENS = 8192;
