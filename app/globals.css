@@ -1,0 +1,359 @@
+/* T4-U3 — the input UI design system. Editorial, confident, not generic: a warm
+   paper ground, an ink wordmark, one decisive indigo accent, generous type. */
+
+:root {
+  --paper: #f7f5f0;
+  --card: #fffdf9;
+  --ink: #16151a;
+  --muted: #5d5a66;
+  --line: #e4e0d6;
+  --accent: #3858e9;
+  --accent-ink: #21307a;
+  --danger: #b42318;
+  --danger-bg: #fef3f2;
+  --ok: #157347;
+  --ok-bg: #ecfdf3;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(22, 21, 26, 0.04), 0 12px 32px -12px rgba(22, 21, 26, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(56, 88, 233, 0.08), transparent 60%),
+    var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  background: rgba(22, 21, 26, 0.05);
+  padding: 0.1em 0.36em;
+  border-radius: 5px;
+}
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 5rem) clamp(1.1rem, 4vw, 2rem) 4rem;
+}
+
+/* ── Masthead ───────────────────────────────────────────────────────────── */
+.masthead {
+  margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  margin: 0 0 0.4rem;
+}
+
+.wordmark {
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: clamp(2.6rem, 8vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  font-weight: 700;
+}
+
+.lede {
+  font-size: 1.05rem;
+  color: #2c2a33;
+  max-width: 62ch;
+  margin: 0 0 1.25rem;
+}
+
+.disclaimer {
+  font-size: 0.86rem;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 0.75rem 0.95rem;
+  max-width: 64ch;
+  margin: 0;
+}
+
+.disclaimer a {
+  color: var(--accent-ink);
+}
+
+/* ── Form ───────────────────────────────────────────────────────────────── */
+.generator {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.field {
+  margin-bottom: 1.4rem;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+label,
+.group-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+}
+
+.group-label {
+  margin-bottom: 0.6rem;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 0.55rem;
+}
+
+textarea,
+input[type="text"],
+select {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 6.5rem;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(56, 88, 233, 0.16);
+}
+
+textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.charcount {
+  text-align: right;
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* Criteria block */
+.criteria {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 1.1rem 1rem 1.2rem;
+  margin: 0 0 1.4rem;
+}
+
+.criteria legend {
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0 0.45rem;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 0.9rem;
+}
+
+.color label {
+  font-weight: 500;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swatch {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(45deg, #eee 25%, transparent 25%) -6px 0/12px 12px,
+    linear-gradient(-45deg, #eee 25%, transparent 25%) -6px 0/12px 12px,
+    #fff;
+}
+
+.fonts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 0.9rem;
+}
+
+.font label {
+  font-weight: 500;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.generate {
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.04s ease;
+}
+
+.generate:hover:not(:disabled) {
+  background: #2b46c4;
+}
+
+.generate:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.generate:disabled {
+  background: #b9bed6;
+  cursor: not-allowed;
+}
+
+/* Status / errors */
+.status {
+  margin-top: 1.1rem;
+}
+
+.status:empty {
+  margin-top: 0;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin: 0.4rem 0 0;
+}
+
+.success {
+  background: var(--ok-bg);
+  border: 1px solid #abe2bf;
+  color: #0d4f2e;
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
+  margin: 0;
+}
+
+.failure {
+  background: var(--danger-bg);
+  border: 1px solid #f3c0bb;
+  border-radius: 10px;
+  padding: 0.85rem 0.95rem;
+}
+
+.failure-title {
+  font-weight: 700;
+  color: var(--danger);
+  margin: 0 0 0.3rem;
+}
+
+.issues {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.issues li {
+  background: #fff;
+  border: 1px solid #f1cfca;
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+}
+
+.issue-message {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.issue-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.issue-layer,
+.issue-path {
+  background: rgba(22, 21, 26, 0.05);
+  padding: 0.05em 0.4em;
+  border-radius: 5px;
+}
+
+/* Colophon */
+.colophon {
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.colophon p {
+  margin: 0;
+  max-width: 66ch;
+}
+
+@media (max-width: 480px) {
+  .palette,
+  .fonts {
+    grid-template-columns: 1fr;
+  }
+}
