@@ -1,0 +1,55 @@
+{
+  "description": "dark photographer-portfolio archetype: parameterized media-text hero pattern (one h1, image + statement) + footer pattern with nav",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "umbra-portfolio",
+      "title": "Umbra",
+      "description": "A dark-mode photography portfolio.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#f5f5f4" },
+        { "slug": "contrast", "color": "#0c0c0d" },
+        { "slug": "secondary", "color": "#a3a3a3" },
+        { "slug": "primary", "color": "#e2b35c" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "0.875rem" },
+        { "slug": "medium", "size": "1.125rem" },
+        { "slug": "xxx-large", "size": "3.25rem" }
+      ],
+      "spacing": [
+        { "slug": "40", "size": "1rem" },
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "80", "size": "5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "home",
+        "content": [
+          {
+            "pattern": "hero-portfolio-dark",
+            "params": {
+              "headingText": { "kind": "text", "value": "Chasing light across quiet places" },
+              "introText": {
+                "kind": "text",
+                "value": "Landscape and portrait work made on long walks at the edges of the day."
+              },
+              "mediaUrl": { "kind": "url", "value": "https://example.com/umbra/portrait.jpg" },
+              "surfaceColor": { "kind": "tokenRef", "value": "contrast" },
+              "headingColor": { "kind": "tokenRef", "value": "base" },
+              "mediaWidth": { "kind": "scalar", "value": 50 }
+            }
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}
