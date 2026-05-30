@@ -25,6 +25,20 @@ const DOM_GLOBAL_KEYS = [
   "DOMParser",
 ] as const;
 
+// Assign a global via `Object.defineProperty`, NOT a plain `g.key = value`.
+// On Node >= 21 some of these globals (notably `navigator`, since Node 21
+// shipped a built-in `Navigator`) are exposed as CONFIGURABLE GETTER-ONLY
+// accessor properties. A plain assignment to a getter-only property silently
+// no-ops in sloppy mode but THROWS ("Cannot set property navigator ... which
+// has only a getter") in strict mode — and this module is an ES module, so it
+// always runs strict. `defineProperty` redefines the slot (the property is
+// configurable, so this is allowed) and works uniformly whether the slot was a
+// read-only accessor or absent. (Fixes #49: the assembled-zip path crashed at
+// request/build time on production Node.)
+function defineGlobal(g: Record<string, unknown>, key: string, value: unknown): void {
+  Object.defineProperty(g, key, { value, configurable: true, writable: true });
+}
+
 function installDom(): void {
   const g = globalThis as Record<string, unknown>;
   if (typeof g.window !== "undefined" && typeof g.document !== "undefined") {
@@ -36,20 +50,20 @@ function installDom(): void {
   const dom = new JSDOM("<!doctype html><html><body></body></html>", {
     url: "http://localhost/",
   });
-  g.window = dom.window;
-  g.document = dom.window.document;
-  g.navigator = dom.window.navigator;
-  g.self = dom.window;
+  defineGlobal(g, "window", dom.window);
+  defineGlobal(g, "document", dom.window.document);
+  defineGlobal(g, "navigator", dom.window.navigator);
+  defineGlobal(g, "self", dom.window);
   for (const key of DOM_GLOBAL_KEYS) {
     const value = (dom.window as unknown as Record<string, unknown>)[key];
-    if (value !== undefined && g[key] === undefined) g[key] = value;
+    if (value !== undefined && g[key] === undefined) defineGlobal(g, key, value);
   }
   if (typeof g.requestAnimationFrame !== "function") {
-    g.requestAnimationFrame = (cb: (t: number) => void): number =>
-      setTimeout(() => cb(Date.now()), 0) as unknown as number;
+    defineGlobal(g, "requestAnimationFrame", (cb: (t: number) => void): number =>
+      setTimeout(() => cb(Date.now()), 0) as unknown as number);
   }
   if (typeof g.cancelAnimationFrame !== "function") {
-    g.cancelAnimationFrame = (): void => {};
+    defineGlobal(g, "cancelAnimationFrame", (): void => {});
   }
 }
 
