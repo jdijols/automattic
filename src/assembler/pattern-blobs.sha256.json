@@ -2,6 +2,7 @@
   "_comment": "SHA-256 manifest of the seed pattern.html blobs (origin §6.4 security note). The pattern blobs are trusted-by-assumption inputs to the substitution path; this manifest makes any modification to a blob visible in a PR. pattern-manifest.test.ts asserts the on-disk blobs hash to these values, and U9/U11's pipeline re-runs the integrity scan + this check. Regenerate intentionally via the regen path in pattern-manifest.ts when a pattern is deliberately edited.",
   "hero-cover": "7b70233f6e045018f62507032fd28fefa812d59a36740ccaddec9c5a2fb522bc",
   "hero-portfolio-dark": "2803085d2737e88ee26a36f42b3bd63f595e46becbe46b9d8e960027786706bc",
+  "landing-hero": "2c19d5478071314ab84ed4b5b42bface4f0685b149678a5d5af2a23cfeb1c7e6",
   "query-loop-list": "56072bc085b1220130819e741994b768e39f60701e225d22989a0d07e5025b64",
   "site-footer": "b5305c0963bbf52ff4cc5e5e2a8e98650e7f7e81b277aafa8651056254076fd1"
 }

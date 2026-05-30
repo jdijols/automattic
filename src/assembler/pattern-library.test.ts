@@ -17,6 +17,7 @@ describe("pattern-library metadata loader", () => {
     expect([...PATTERN_SLUGS].sort()).toEqual([
       "hero-cover",
       "hero-portfolio-dark",
+      "landing-hero",
       "query-loop-list",
       "site-footer",
     ]);

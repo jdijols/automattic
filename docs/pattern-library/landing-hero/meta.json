@@ -1,0 +1,133 @@
+{
+  "name": "landing-hero",
+  "title": "Minimalist Landing Hero (Centered + Feature Columns)",
+  "region": "hero",
+  "validRegions": ["hero", "page-top"],
+  "blocksUsed": [
+    "core/group",
+    "core/heading",
+    "core/paragraph",
+    "core/buttons",
+    "core/button",
+    "core/columns",
+    "core/column"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "secondary", "primary"],
+    "fontSize": ["small", "medium", "large", "xxx-large"],
+    "spacing": ["40", "50", "80"]
+  },
+  "parameterizable": {
+    "content": [
+      "eyebrow text",
+      "heading text",
+      "subhead text",
+      "button labels",
+      "button URLs",
+      "three feature titles + bodies"
+    ],
+    "tokens": ["surface color", "heading text color", "accent (eyebrow + primary button) color"],
+    "media": [],
+    "structuralKnobs": ["hero content width", "outer content width"]
+  },
+  "locked": [
+    "block nesting: group(full, surface) > [group(constrained, centered hero stack), columns(3 feature columns)]",
+    "exactly one h1 (level 1) — the centered hero heading; feature columns use h3",
+    "feature row is exactly three columns, each: h3 title + supporting paragraph",
+    "buttons: one solid (primary) + one outline (is-style-outline), centered via flex"
+  ],
+  "parameterizationRules": [
+    "This is a no-image, whitespace-led hero: distinctiveness comes from the type scale, the accent token, and generous spacing — not from added media. Keep the hero stack narrower (contentSize ~720px) than the feature row (outer ~1080px) so the centered statement reads as the focal point and the three features sit calmly beneath it.",
+    "The feature row is fixed at three columns by design (the minimalist rule of three). Changing the count is a different pattern, not a knob — admit a new pattern rather than parameterizing columnCount here."
+  ],
+  "slots": {
+    "eyebrowText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "headingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "subheadText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2], "attribute": "content" }
+    },
+    "primaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "text" }
+    },
+    "primaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "url" }
+    },
+    "secondaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 3, 1], "attribute": "text" }
+    },
+    "secondaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 3, 1], "attribute": "url" }
+    },
+    "feature1Title": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0], "attribute": "content" }
+    },
+    "feature1Body": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 1], "attribute": "content" }
+    },
+    "feature2Title": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0], "attribute": "content" }
+    },
+    "feature2Body": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 1], "attribute": "content" }
+    },
+    "feature3Title": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0], "attribute": "content" }
+    },
+    "feature3Body": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 1], "attribute": "content" }
+    },
+    "surfaceColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "headingColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 1], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "eyebrowColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "primaryButtonBackground": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "heroWidth": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0], "attribute": "layout.contentSize" },
+      "bounds": { "enum": ["600px", "640px", "720px", "800px"] }
+    },
+    "outerWidth": {
+      "kind": "scalar",
+      "target": { "blockPath": [0], "attribute": "layout.contentSize" },
+      "bounds": { "enum": ["960px", "1080px", "1200px"] }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": true,
+    "validTemplates": ["front-page", "home", "index", "page"],
+    "mustBeFirstInMainOrSecond": true
+  },
+  "notes": "A light, whitespace-led counterpart to the cover and dark-editorial heroes: a centered statement + dual CTA in a narrow column, with a calm three-up feature row beneath it — all native blocks, no media, no new allowlist entries. The h1 here is the document's single h1; downstream patterns must use h2+. The outline button uses the is-style-outline block-style variation that core provides."
+}
