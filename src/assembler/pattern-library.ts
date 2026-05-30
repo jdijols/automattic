@@ -77,6 +77,7 @@ export interface PatternMeta {
 
 /** The curated pattern set. Expansion is a deliberate Track 2 PR, never runtime. */
 export const PATTERN_SLUGS = [
+  "faq-accordion",
   "hero-cover",
   "hero-portfolio-dark",
   "landing-hero",

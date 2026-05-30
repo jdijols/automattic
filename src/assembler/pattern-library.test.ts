@@ -15,6 +15,7 @@ import {
 describe("pattern-library metadata loader", () => {
   it("exposes the curated pattern slugs", () => {
     expect([...PATTERN_SLUGS].sort()).toEqual([
+      "faq-accordion",
       "hero-cover",
       "hero-portfolio-dark",
       "landing-hero",
