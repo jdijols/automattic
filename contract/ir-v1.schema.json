@@ -195,6 +195,7 @@
                 "core/list",
                 "core/list-item",
                 "core/quote",
+                "core/details",
                 "core/site-title",
                 "core/site-logo",
                 "core/site-tagline",

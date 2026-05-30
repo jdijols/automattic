@@ -31,6 +31,7 @@ export const ALLOWLIST = [
   "core/list",
   "core/list-item",
   "core/quote",
+  "core/details",
   // Site / FSE blocks
   "core/site-title",
   "core/site-logo",

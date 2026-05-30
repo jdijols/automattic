@@ -6,9 +6,10 @@ import { ALLOWLIST, isAllowedBlock } from "./allowlist";
 describe("allowlist", () => {
   it("is a closed set of unique block names", () => {
     expect(new Set(ALLOWLIST).size).toBe(ALLOWLIST.length);
-    // The MVP surface is the origin §4.1 union, plus core/media-text (admitted
-    // for the dark editorial hero). Expansion is a deliberate, reviewed PR.
-    expect(ALLOWLIST.length).toBe(33);
+    // The MVP surface is the origin §4.1 union, plus core/media-text (dark
+    // editorial hero) and core/details (the native FAQ accordion). Expansion is
+    // a deliberate, reviewed PR.
+    expect(ALLOWLIST.length).toBe(34);
   });
 
   it("admits every block every catalog pattern uses (drift guard)", () => {
