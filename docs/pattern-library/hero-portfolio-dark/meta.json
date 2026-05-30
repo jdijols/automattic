@@ -1,0 +1,100 @@
+{
+  "name": "hero-portfolio-dark",
+  "title": "Dark Editorial Hero (Media + Text)",
+  "region": "hero",
+  "validRegions": ["hero", "page-top"],
+  "blocksUsed": [
+    "core/group",
+    "core/media-text",
+    "core/paragraph",
+    "core/heading",
+    "core/buttons",
+    "core/button"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "secondary", "primary"],
+    "fontSize": ["small", "medium", "xxx-large"],
+    "spacing": ["40", "50", "80"]
+  },
+  "parameterizable": {
+    "content": ["eyebrow text", "heading text", "intro text", "button labels", "button URLs"],
+    "tokens": ["surface (dark background) color", "heading text color", "accent/button color"],
+    "media": ["portrait/landscape image URL on the media side"],
+    "structuralKnobs": ["mediaPosition (left|right)", "mediaWidth (30-66%)"]
+  },
+  "locked": [
+    "block nesting: group(constrained, dark surface) > media-text > content[eyebrow, h1, intro, buttons]",
+    "exactly one h1 (level 1) — this is the page's primary heading, inside the media-text content column",
+    "the media-text media slot is an image (mediaType:image); video/embed is not admitted here",
+    "buttons: one solid (primary) + one outline (is-style-outline)"
+  ],
+  "parameterizationRules": [
+    "mediaWidth is bounded 30-66%: below 30 the portrait collapses to a sliver on desktop, above 66 the statement copy loses the editorial column. The split is the point — keep both sides legible. Confirmed visually against the WordPress Playground render (WP 6.6, 2026-05-29).",
+    "This pattern is dark-mode by construction: the outer group carries the dark surface color and the heading/intro use a light-on-dark token pair (base/secondary). Re-skinning to light mode means swapping the surface↔text token pair together, never one alone, or contrast collapses."
+  ],
+  "slots": {
+    "eyebrowText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "headingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "introText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2], "attribute": "content" }
+    },
+    "primaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "text" }
+    },
+    "primaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "url" }
+    },
+    "secondaryButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 3, 1], "attribute": "text" }
+    },
+    "secondaryButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0, 3, 1], "attribute": "url" }
+    },
+    "mediaUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 0], "attribute": "mediaUrl" }
+    },
+    "surfaceColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "headingColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 1], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "primaryButtonBackground": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 3, 0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "mediaWidth": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0], "attribute": "mediaWidth" },
+      "bounds": { "min": 30, "max": 66 }
+    },
+    "mediaPosition": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 0], "attribute": "mediaPosition" },
+      "bounds": { "enum": ["left", "right"] }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": true,
+    "validTemplates": ["front-page", "home", "index", "page"],
+    "mustBeFirstInMainOrSecond": true
+  },
+  "notes": "An asymmetric editorial alternative to the centered hero-cover: a dark full-bleed surface with a large statement h1 beside a portrait image (core/media-text). Distinctiveness comes from the token pair (dark surface + light type), the media slot, and the mediaWidth/mediaPosition split — NOT from restructuring. The h1 here is the document's single h1; downstream patterns must use h2+. The outline button uses the is-style-outline block-style variation that core provides. core/media-text is admitted to the allowlist for this pattern (image media only)."
+}

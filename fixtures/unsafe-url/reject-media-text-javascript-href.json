@@ -1,0 +1,23 @@
+{
+  "description": "an inline core/media-text with a javascript: href is rejected (safe-scheme guard on the newly-admitted block)",
+  "target": "ir",
+  "expect": "reject",
+  "expectedCode": "ATTRIBUTE_UNSAFE_URL",
+  "input": {
+    "irVersion": 1,
+    "theme": { "slug": "demo-theme", "title": "Demo", "wpVersionTarget": "6.6" },
+    "tokens": {},
+    "regions": [
+      {
+        "kind": "template",
+        "name": "index",
+        "content": [
+          {
+            "block": "core/media-text",
+            "attributes": { "mediaType": "image", "href": "javascript:alert(1)" }
+          }
+        ]
+      }
+    ]
+  }
+}

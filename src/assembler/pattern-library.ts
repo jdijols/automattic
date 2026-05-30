@@ -75,8 +75,13 @@ export interface PatternMeta {
   siteData?: { navigation?: SiteDataDependency[] };
 }
 
-/** The three seed patterns. Expansion is a deliberate Track 2 PR, never runtime. */
-export const PATTERN_SLUGS = ["hero-cover", "query-loop-list", "site-footer"] as const;
+/** The curated pattern set. Expansion is a deliberate Track 2 PR, never runtime. */
+export const PATTERN_SLUGS = [
+  "hero-cover",
+  "hero-portfolio-dark",
+  "query-loop-list",
+  "site-footer",
+] as const;
 export type PatternSlug = (typeof PATTERN_SLUGS)[number];
 
 // Resolve the repo's docs/pattern-library dir relative to this module
