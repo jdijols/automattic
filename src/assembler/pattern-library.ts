@@ -79,6 +79,7 @@ export interface PatternMeta {
 export const PATTERN_SLUGS = [
   "hero-cover",
   "hero-portfolio-dark",
+  "landing-hero",
   "query-loop-list",
   "site-footer",
 ] as const;
