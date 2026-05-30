@@ -69,4 +69,13 @@ describe("Track 2 patterns install, activate, and pass all four assertions", () 
     expect(result.failures).toEqual([]);
     expect(result.ok).toBe(true);
   });
+
+  it("magazine-index (parameterized query/post-template grid + pagination + footer-pattern nav)", async () => {
+    const result = await gateFixture("magazine-index", "ledger-magazine");
+    expect(result.failures).toEqual([]);
+    expect(result.ok).toBe(true);
+    // The query renders against a fresh install (default sample post); every
+    // post-* block + pagination must resolve to a registered block.
+    expect(result.failures.filter((f) => f.check === "block-resolution")).toEqual([]);
+  });
 });
