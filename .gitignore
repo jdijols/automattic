@@ -36,6 +36,10 @@ generated/
 coverage/
 .nyc_output/
 
+# §3.6 experiment output — written by `npm run experiment` (live, token-spending).
+# The human commits this deliberately after a supervised run; never auto-committed.
+experiments/first-try-success/RESULTS.md
+
 # OS / editor
 .DS_Store
 Thumbs.db
