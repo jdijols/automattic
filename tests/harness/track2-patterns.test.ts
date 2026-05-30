@@ -78,4 +78,10 @@ describe("Track 2 patterns install, activate, and pass all four assertions", () 
     // post-* block + pagination must resolve to a registered block.
     expect(result.failures.filter((f) => f.check === "block-resolution")).toEqual([]);
   });
+
+  it("pricing-table (parameterized three-tier cards + feature lists + CTAs + footer-pattern nav)", async () => {
+    const result = await gateFixture("pricing-table", "tier-pricing");
+    expect(result.failures).toEqual([]);
+    expect(result.ok).toBe(true);
+  });
 });
