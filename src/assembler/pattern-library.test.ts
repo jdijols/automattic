@@ -22,6 +22,7 @@ describe("pattern-library metadata loader", () => {
       "pricing-table",
       "query-loop-list",
       "site-footer",
+      "testimonials-row",
     ]);
   });
 
