@@ -1,0 +1,106 @@
+{
+  "name": "faq-accordion",
+  "title": "FAQ Accordion (Native Disclosure)",
+  "region": "content",
+  "validRegions": ["content", "page-section"],
+  "blocksUsed": [
+    "core/group",
+    "core/heading",
+    "core/paragraph",
+    "core/details"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "secondary", "primary"],
+    "fontSize": ["small", "medium", "xx-large"],
+    "spacing": ["30", "40", "50", "60", "80"]
+  },
+  "parameterizable": {
+    "content": [
+      "eyebrow + section heading + standfirst",
+      "five question/answer pairs"
+    ],
+    "tokens": ["page surface color", "accent (eyebrow) color"],
+    "media": [],
+    "structuralKnobs": ["which row starts expanded (showContent on a details block)"]
+  },
+  "locked": [
+    "block nesting: group(surface) > [group(header), 5x core/details > answer paragraph]",
+    "accordion rows are native core/details (HTML <details>/<summary>) — NO JavaScript, NO custom-HTML toggle",
+    "each row: the question is the details summary; the answer is one paragraph inside the details",
+    "headings are h2 (section) — never h1 (a hero, if present, owns the single h1); the question is a <summary>, not a heading"
+  ],
+  "parameterizationRules": [
+    "The accordion is the native core/details disclosure block: expand/collapse is browser-native, so it works with zero JavaScript and degrades gracefully. Never substitute a Custom HTML toggle — that is the disqualifying block and defeats the point.",
+    "Open exactly one row by default (showContent:true on the first details). Opening all of them defeats the scannability an FAQ accordion exists to provide; opening none hides the answer pattern from first-time readers."
+  ],
+  "slots": {
+    "eyebrowText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "sectionHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "standfirstText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2], "attribute": "content" }
+    },
+    "question1": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1], "attribute": "summary" }
+    },
+    "answer1": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0], "attribute": "content" }
+    },
+    "question2": {
+      "kind": "text",
+      "target": { "blockPath": [0, 2], "attribute": "summary" }
+    },
+    "answer2": {
+      "kind": "text",
+      "target": { "blockPath": [0, 2, 0], "attribute": "content" }
+    },
+    "question3": {
+      "kind": "text",
+      "target": { "blockPath": [0, 3], "attribute": "summary" }
+    },
+    "answer3": {
+      "kind": "text",
+      "target": { "blockPath": [0, 3, 0], "attribute": "content" }
+    },
+    "question4": {
+      "kind": "text",
+      "target": { "blockPath": [0, 4], "attribute": "summary" }
+    },
+    "answer4": {
+      "kind": "text",
+      "target": { "blockPath": [0, 4, 0], "attribute": "content" }
+    },
+    "question5": {
+      "kind": "text",
+      "target": { "blockPath": [0, 5], "attribute": "summary" }
+    },
+    "answer5": {
+      "kind": "text",
+      "target": { "blockPath": [0, 5, 0], "attribute": "content" }
+    },
+    "backgroundColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "accentColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": "typically",
+    "validTemplates": ["page", "front-page", "home"],
+    "requiresDynamicContext": false
+  },
+  "notes": "A five-row FAQ built on the native core/details disclosure block (HTML <details>/<summary>) — a real accordion with zero JavaScript and no Custom HTML. The question is each details' summary attribute; the answer is one paragraph inside. core/details is admitted to the allowlist for this pattern. Headings stay at h2; the questions are <summary> elements, not headings. No new attribute bounds needed — details carries no URL-valued attributes."
+}

@@ -1,0 +1,58 @@
+{
+  "description": "FAQ page archetype: parameterized native-accordion pattern (5 core/details rows, first expanded) + footer pattern with nav",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "clarity-faq",
+      "title": "Clarity",
+      "description": "A product FAQ page.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#ffffff" },
+        { "slug": "contrast", "color": "#11161d" },
+        { "slug": "secondary", "color": "#5b6472" },
+        { "slug": "primary", "color": "#3b5bff" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "0.9375rem" },
+        { "slug": "medium", "size": "1.0625rem" },
+        { "slug": "xx-large", "size": "2.4rem" }
+      ],
+      "spacing": [
+        { "slug": "30", "size": "0.75rem" },
+        { "slug": "40", "size": "1rem" },
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "60", "size": "2.5rem" },
+        { "slug": "80", "size": "5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "page",
+        "content": [
+          {
+            "pattern": "faq-accordion",
+            "params": {
+              "sectionHeadingText": { "kind": "text", "value": "Questions, answered" },
+              "question1": { "kind": "text", "value": "How does the free plan work?" },
+              "answer1": {
+                "kind": "text",
+                "value": "The free plan is yours forever — one workspace, up to three projects, no card required."
+              },
+              "question2": { "kind": "text", "value": "Can I change plans later?" },
+              "question5": { "kind": "text", "value": "How do I get support?" },
+              "backgroundColor": { "kind": "tokenRef", "value": "base" },
+              "accentColor": { "kind": "tokenRef", "value": "primary" }
+            }
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}
