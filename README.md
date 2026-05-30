@@ -68,6 +68,26 @@ cp .env.example .env.local   # then set ANTHROPIC_API_KEY=...
 
 ---
 
+## Deploying to Vercel
+
+The app is a standard Next.js App Router project and deploys to Vercel with no build configuration. `vercel.json` pins the framework and gives the generate route a `maxDuration` of 120s (the §7.3 latency budget is p95 ≤ 90s for generation; the rest is assembly headroom).
+
+```bash
+# One-time, from the repo root:
+vercel link                                   # link to a Vercel project
+vercel env add ANTHROPIC_API_KEY production   # paste your key (server-only — see below)
+vercel env add ANTHROPIC_API_KEY preview      # (optional) for preview deployments
+vercel deploy --prod                          # build + deploy
+```
+
+**Required environment variable — server-only.** `ANTHROPIC_API_KEY` is the only variable the app needs. It is read **server-side only**, by the AI provider inside the `/api/generate` route; it is never referenced in client code, never bundled, and never returned to the browser (do **not** prefix it with `NEXT_PUBLIC_`). `.env.example` is the canonical reference. CI builds and the fast test gate need **no** key (the provider is mocked).
+
+**Runtime.** `/api/generate` is pinned to the Node runtime (`export const runtime = "nodejs"`) — never Edge — because the assembler bootstraps a jsdom DOM for `@wordpress/blocks` during zip assembly. `jsdom` is therefore a production `dependency` (not a devDependency), so it survives a production `--omit=dev` install. The assembler is imported **lazily** (a dynamic import inside the route's success branch), so the DOM bootstrap stays out of `next build`'s page-data collection and the build is clean.
+
+> **Known deploy caveat (issue #49, cross-track).** `next build` succeeds and the route's IR/validation/error paths run anywhere. The **assembled-zip response**, however, depends on the assembler's DOM bootstrap (`src/assembler/dom-bootstrap.ts`), which currently assigns the read-only global `navigator` and so throws on **Node ≥ 21** at request time. Until the Track-2 `dom-bootstrap` fix (an `Object.defineProperty` guard) ships, the live `.zip` download is not guaranteed on Vercel's default Node runtime. That file is outside this delivery track's domain; the fix is tracked in issue #49. **Prep is complete; an actual production deploy is gated on that fix.**
+
+---
+
 ## Architecture overview
 
 The system is a fail-closed pipeline. The AI proposes; a deterministic validator and assembler enforce. A model that *tries* to emit a Custom HTML block cannot succeed — the dangerous shape is structurally unrepresentable at the IR level (the block allowlist enum has no `core/html`), it is rejected by the validator, and it is byte-scanned out of the assembled artifact.

@@ -19,12 +19,14 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "3.0.81",
+    "@types/jsdom": "^28.0.3",
     "@wordpress/block-library": "9.47.0",
     "@wordpress/blocks": "15.20.0",
     "@wp-playground/cli": "^3.1.35",
     "ai": "6.0.192",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "jsdom": "^29.1.1",
     "jszip": "^3.10.1",
     "next": "^16.2.6",
     "react": "^19.2.6",
@@ -33,12 +35,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/jsdom": "^28.0.3",
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^10.4.0",
-    "jsdom": "^29.1.1",
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.60.0",
     "vitest": "^4.1.7"
