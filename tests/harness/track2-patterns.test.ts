@@ -63,4 +63,10 @@ describe("Track 2 patterns install, activate, and pass all four assertions", () 
     // registered block — no block-resolution failure.
     expect(result.failures.filter((f) => f.check === "block-resolution")).toEqual([]);
   });
+
+  it("landing-hero (parameterized centered hero + 3 feature columns + footer-pattern nav)", async () => {
+    const result = await gateFixture("landing-hero", "lumo-landing");
+    expect(result.failures).toEqual([]);
+    expect(result.ok).toBe(true);
+  });
 });

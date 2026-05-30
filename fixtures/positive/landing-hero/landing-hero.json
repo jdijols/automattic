@@ -1,0 +1,60 @@
+{
+  "description": "minimalist SaaS landing archetype: parameterized centered landing-hero pattern (one h1, dual CTA, 3 feature columns) + footer pattern with nav",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "lumo-landing",
+      "title": "Lumo",
+      "description": "A minimalist product landing page.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#ffffff" },
+        { "slug": "contrast", "color": "#11161d" },
+        { "slug": "secondary", "color": "#5b6472" },
+        { "slug": "primary", "color": "#3b5bff" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "0.875rem" },
+        { "slug": "medium", "size": "1.125rem" },
+        { "slug": "large", "size": "1.375rem" },
+        { "slug": "xxx-large", "size": "3rem" }
+      ],
+      "spacing": [
+        { "slug": "40", "size": "1rem" },
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "80", "size": "5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "home",
+        "content": [
+          {
+            "pattern": "landing-hero",
+            "params": {
+              "eyebrowText": { "kind": "text", "value": "Now in public beta" },
+              "headingText": { "kind": "text", "value": "Everything you ship, in one calm place" },
+              "subheadText": {
+                "kind": "text",
+                "value": "A minimalist workspace that stays out of the way."
+              },
+              "primaryButtonLabel": { "kind": "text", "value": "Start free" },
+              "primaryButtonUrl": { "kind": "url", "value": "https://example.com/signup" },
+              "secondaryButtonUrl": { "kind": "url", "value": "mailto:sales@example.com" },
+              "feature1Title": { "kind": "text", "value": "Fast by default" },
+              "surfaceColor": { "kind": "tokenRef", "value": "base" },
+              "primaryButtonBackground": { "kind": "tokenRef", "value": "primary" },
+              "heroWidth": { "kind": "scalar", "value": "720px" }
+            }
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}
