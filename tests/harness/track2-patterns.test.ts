@@ -84,4 +84,10 @@ describe("Track 2 patterns install, activate, and pass all four assertions", () 
     expect(result.failures).toEqual([]);
     expect(result.ok).toBe(true);
   });
+
+  it("testimonials-row (parameterized three-card social proof + avatars + footer-pattern nav)", async () => {
+    const result = await gateFixture("testimonials-row", "chorus-proof");
+    expect(result.failures).toEqual([]);
+    expect(result.ok).toBe(true);
+  });
 });
