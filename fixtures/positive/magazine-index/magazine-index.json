@@ -1,0 +1,57 @@
+{
+  "description": "magazine blog-index archetype: parameterized editorial post-grid pattern (h2 + standfirst, query/post-template grid, pagination) + footer pattern with nav",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "ledger-magazine",
+      "title": "Ledger",
+      "description": "An editorial journal.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#fbfbf9" },
+        { "slug": "secondary", "color": "#6b6b67" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "0.875rem" },
+        { "slug": "medium", "size": "1.0625rem" },
+        { "slug": "x-large", "size": "1.6rem" },
+        { "slug": "xx-large", "size": "2.4rem" }
+      ],
+      "spacing": [
+        { "slug": "30", "size": "0.75rem" },
+        { "slug": "40", "size": "1rem" },
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "60", "size": "2.5rem" },
+        { "slug": "70", "size": "4rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "index",
+        "content": [
+          {
+            "pattern": "magazine-index",
+            "params": {
+              "sectionHeadingText": { "kind": "text", "value": "From the journal" },
+              "standfirstText": {
+                "kind": "text",
+                "value": "Long-form essays and field notes, updated as the work happens."
+              },
+              "backgroundColor": { "kind": "tokenRef", "value": "base" },
+              "perPage": { "kind": "scalar", "value": 6 },
+              "postTemplateColumns": { "kind": "scalar", "value": 2 },
+              "featuredImageAspect": { "kind": "scalar", "value": "16/9" },
+              "excerptLength": { "kind": "scalar", "value": 24 }
+            }
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}
