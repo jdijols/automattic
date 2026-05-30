@@ -1,0 +1,112 @@
+{
+  "name": "magazine-index",
+  "title": "Magazine Post Grid (Editorial Index)",
+  "region": "content",
+  "validRegions": ["content", "home-feed", "archive-feed"],
+  "blocksUsed": [
+    "core/group",
+    "core/heading",
+    "core/paragraph",
+    "core/query",
+    "core/post-template",
+    "core/post-featured-image",
+    "core/post-date",
+    "core/post-title",
+    "core/post-excerpt",
+    "core/query-pagination",
+    "core/query-pagination-previous",
+    "core/query-pagination-numbers",
+    "core/query-pagination-next"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "secondary"],
+    "fontSize": ["small", "medium", "x-large", "xx-large"],
+    "spacing": ["30", "40", "50", "60", "70"]
+  },
+  "parameterizable": {
+    "content": ["section heading text", "standfirst text"],
+    "tokens": ["background color", "heading type scale"],
+    "queryKnobs": ["perPage", "orderBy (date/title/menu_order)", "order (asc/desc)", "postType"],
+    "layoutKnobs": [
+      "post-template grid columnCount (1-4)",
+      "featured-image aspect ratio + corner radius",
+      "excerpt length"
+    ]
+  },
+  "locked": [
+    "query > post-template > [post-* fields] nesting — post-* blocks are ONLY valid inside post-template",
+    "post field ORDER is the editorial card: featured-image, date (uppercase kicker), title, excerpt",
+    "query-pagination is a direct child of query, sibling to post-template",
+    "headings here are h2 — never h1 (a hero, if present, owns the single h1)"
+  ],
+  "parameterizationRules": [
+    "This is the editorial, larger-card counterpart to query-loop-list: a 2-up grid with 16/9 lead images and an x-large title, vs the seed's denser 3-up list. The date is a typographic kicker ABOVE the title (uppercase, letter-spaced) — re-ordering the fields breaks the magazine read; change columnCount/aspect/excerpt, not the field order.",
+    "perPage is bounded 1-24: a blog index renders one screen of posts, not the whole archive. Deep pagination is the query-pagination block's job, not a giant perPage."
+  ],
+  "slots": {
+    "sectionHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0], "attribute": "content" }
+    },
+    "standfirstText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1], "attribute": "content" }
+    },
+    "backgroundColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "headingFontSize": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0], "attribute": "fontSize" },
+      "bounds": { "vocab": "fontSize" }
+    },
+    "perPage": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2], "attribute": "query.perPage" },
+      "bounds": { "min": 1, "max": 24 }
+    },
+    "orderBy": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2], "attribute": "query.orderBy" },
+      "bounds": { "enum": ["date", "title", "menu_order"] }
+    },
+    "order": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2], "attribute": "query.order" },
+      "bounds": { "enum": ["asc", "desc"] }
+    },
+    "postType": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2], "attribute": "query.postType" },
+      "bounds": { "enum": ["post", "page"] }
+    },
+    "postTemplateColumns": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2, 0], "attribute": "layout.columnCount" },
+      "bounds": { "min": 1, "max": 4 }
+    },
+    "featuredImageAspect": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2, 0, 0], "attribute": "aspectRatio" },
+      "bounds": { "enum": ["1", "4/3", "3/2", "16/9", "21/9"] }
+    },
+    "featuredImageRadius": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2, 0, 0], "attribute": "style.border.radius" },
+      "bounds": { "enum": ["0px", "4px", "8px", "10px", "16px"] }
+    },
+    "excerptLength": {
+      "kind": "scalar",
+      "target": { "blockPath": [0, 2, 0, 3], "attribute": "excerptLength" },
+      "bounds": { "min": 8, "max": 60 }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": "typically",
+    "validTemplates": ["front-page", "home", "index", "archive"],
+    "requiresDynamicContext": "post-* blocks resolve against the loop's current post; meaningless outside a query/template context"
+  },
+  "notes": "The editorial, larger-card sibling of query-loop-list: a 2-up post grid with 16/9 lead images, an uppercase date kicker, and an x-large linked title, fronted by a section header (h2 + standfirst). Reuses the established query/post-template/pagination grammar (post-* blocks are context-bound — the validator rejects them outside a query subtree). inherit:false means this query defines its own params. No new allowlist entries."
+}
