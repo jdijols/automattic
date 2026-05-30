@@ -13,17 +13,23 @@
 // Every NON-success path (422 failed, 400 input_too_long/invalid_criteria/
 // invalid_request, 429 rate_limited, 502 generation_failed, 503 capacity_exhausted)
 // is left byte-identical: only the 200/`done` branch diverges from returning IR JSON.
-import { assembleThemeZip } from "@/assembler/index";
+//
+// T4-U4: the assembler is imported LAZILY (a dynamic import inside the success
+// branch), NOT at module top-level. The assembler pulls in @wordpress/blocks via a
+// jsdom DOM bootstrap that runs at import time; a static top-level import made Next's
+// build-time "Collecting page data" step evaluate it and crash (issue #49). Loading
+// it only when a generation actually succeeds keeps module evaluation (and `next
+// build`) free of the DOM bootstrap.
 import { irSchema } from "@/ir/schema";
 import { generateTheme } from "@/orchestration/index";
 import { RateLimiter, SpendGuard, handleGenerateRequest, sanitizeForLog } from "@/orchestration/limits";
 
 // Pin the Node runtime (never Edge): the assembler bootstraps a jsdom DOM for
-// @wordpress/blocks, so this path must run on Node. (Production-runtime caveat:
-// jsdom is currently a devDependency and src/assembler/dom-bootstrap.ts assigns
-// the read-only global `navigator` — both make the assembled-zip path fail on a
-// production Node ≥21 / devDep-pruned install. Tracked for T4-U4 deploy-prep + a
-// Track-2 dom-bootstrap fix; out of this unit's file domain.)
+// @wordpress/blocks, so this path must run on Node. jsdom is a runtime `dependency`
+// (T4-U4) so it survives a production `--omit=dev` install. (Open cross-track caveat
+// — issue #49: src/assembler/dom-bootstrap.ts still assigns the read-only global
+// `navigator`, which throws on Node ≥21; until that Track-2 fix ships, the assembled
+// -zip path runs only where a DOM already exists. Out of this unit's file domain.)
 export const runtime = "nodejs";
 
 // Module-scoped guards: one set per server instance.
@@ -59,6 +65,9 @@ export async function POST(request: Request): Promise<Response> {
   if (result.status === 200 && isDoneBody(result.body)) {
     try {
       const ir = irSchema.parse(result.body.ir);
+      // Lazy import (see header): keeps the jsdom DOM bootstrap out of module
+      // evaluation / `next build` page-data collection — loaded only on success.
+      const { assembleThemeZip } = await import("@/assembler/index");
       const zip = await assembleThemeZip(ir);
       // Re-back the bytes with a plain ArrayBuffer: assembleThemeZip returns
       // Uint8Array<ArrayBufferLike>, whose buffer could (per the type) be a

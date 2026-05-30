@@ -10,7 +10,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { type GenerationResult } from "../../src/orchestration/contract";
 import { type IRValidated } from "../../src/validator";
@@ -37,6 +37,15 @@ const validIR = blogFixture.input as unknown as IRValidated;
 
 const post = (body: unknown, headers: Record<string, string> = {}): Request =>
   new Request("http://localhost/api/generate", { method: "POST", body: JSON.stringify(body), headers });
+
+// The route lazily `await import("@/assembler/index")` on success (T4-U4, so the
+// jsdom DOM bootstrap stays out of `next build` page-data collection). Warm that
+// heavy module once here — @wordpress/blocks + registerCoreBlocks + the jsdom
+// bootstrap cold-load otherwise lands inside the first success test's per-test
+// timer and trips the 5s default. Warming it leaves the per-test timers honest.
+beforeAll(async () => {
+  await import("@/assembler/index");
+}, 60_000);
 
 afterEach(() => generateTheme.mockReset());
 
