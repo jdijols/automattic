@@ -90,4 +90,13 @@ describe("Track 2 patterns install, activate, and pass all four assertions", () 
     expect(result.failures).toEqual([]);
     expect(result.ok).toBe(true);
   });
+
+  it("faq-accordion (parameterized native core/details disclosure rows + footer-pattern nav)", async () => {
+    const result = await gateFixture("faq-accordion", "clarity-faq");
+    expect(result.failures).toEqual([]);
+    expect(result.ok).toBe(true);
+    // core/details is admitted to the allowlist; every accordion row must
+    // resolve to the registered native disclosure block (no core/html toggle).
+    expect(result.failures.filter((f) => f.check === "block-resolution")).toEqual([]);
+  });
 });
