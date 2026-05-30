@@ -1,0 +1,60 @@
+{
+  "description": "pricing page archetype: parameterized three-tier pricing-table pattern (inverted featured tier, feature lists, CTAs) + footer pattern with nav",
+  "target": "ir",
+  "expect": "pass",
+  "input": {
+    "irVersion": 1,
+    "theme": {
+      "slug": "tier-pricing",
+      "title": "Tier",
+      "description": "A SaaS pricing page.",
+      "wpVersionTarget": "6.6"
+    },
+    "tokens": {
+      "colors": [
+        { "slug": "base", "color": "#ffffff" },
+        { "slug": "contrast", "color": "#0f1420" },
+        { "slug": "secondary", "color": "#5b6472" },
+        { "slug": "primary", "color": "#3b5bff" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "0.875rem" },
+        { "slug": "medium", "size": "1.0625rem" },
+        { "slug": "large", "size": "1.25rem" },
+        { "slug": "xx-large", "size": "2.4rem" },
+        { "slug": "xxx-large", "size": "3rem" }
+      ],
+      "spacing": [
+        { "slug": "30", "size": "0.75rem" },
+        { "slug": "40", "size": "1rem" },
+        { "slug": "50", "size": "1.5rem" },
+        { "slug": "60", "size": "2.5rem" },
+        { "slug": "80", "size": "5rem" }
+      ]
+    },
+    "regions": [
+      {
+        "kind": "template",
+        "name": "page",
+        "content": [
+          {
+            "pattern": "pricing-table",
+            "params": {
+              "sectionHeadingText": { "kind": "text", "value": "Plans that scale with the work" },
+              "tier1Price": { "kind": "text", "value": "$0" },
+              "tier2Price": { "kind": "text", "value": "$29" },
+              "tier3Price": { "kind": "text", "value": "$79" },
+              "featuredBadgeText": { "kind": "text", "value": "Most popular" },
+              "tier1ButtonLabel": { "kind": "text", "value": "Start free" },
+              "tier2ButtonUrl": { "kind": "url", "value": "https://example.com/trial" },
+              "backgroundColor": { "kind": "tokenRef", "value": "base" },
+              "featuredColumnBackground": { "kind": "tokenRef", "value": "contrast" },
+              "primaryButtonBackground": { "kind": "tokenRef", "value": "primary" }
+            }
+          }
+        ]
+      },
+      { "kind": "part", "name": "footer", "content": [{ "pattern": "site-footer" }] }
+    ]
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "name": "pricing-table",
+  "title": "Three-Tier Pricing Table",
+  "region": "content",
+  "validRegions": ["content", "page-section"],
+  "blocksUsed": [
+    "core/group",
+    "core/columns",
+    "core/column",
+    "core/heading",
+    "core/paragraph",
+    "core/separator",
+    "core/list",
+    "core/list-item",
+    "core/buttons",
+    "core/button"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "secondary", "primary"],
+    "fontSize": ["small", "medium", "large", "xx-large", "xxx-large"],
+    "spacing": ["30", "40", "50", "60", "80"]
+  },
+  "parameterizable": {
+    "content": [
+      "eyebrow + section heading + standfirst",
+      "three tier names, prices, descriptions",
+      "the featured-tier badge text",
+      "three CTA button labels + URLs"
+    ],
+    "tokens": ["page surface color", "featured-tier surface color", "primary CTA color"],
+    "media": [],
+    "structuralKnobs": []
+  },
+  "locked": [
+    "block nesting: group(surface) > [group(header), columns > 3 column > card group]",
+    "exactly three tiers; the middle column is the featured (inverted-surface) tier carrying the badge",
+    "each card: tier name (h3), price (h4), description, separator, feature list, one full-width CTA",
+    "headings are h2 (section) / h3 (tier) / h4 (price) — never h1 (a hero, if present, owns the single h1)",
+    "feature lists are core/list > core/list-item — never a manual bulleted paragraph"
+  ],
+  "parameterizationRules": [
+    "Three tiers is the pattern (good/better/best). Two or four tiers is a different layout — admit a new pattern rather than adding/removing columns here.",
+    "The featured tier is distinguished by an INVERTED surface (dark card among light, or vice-versa) plus the badge — not by size. Keep featuredColumnBackground and the page surface on opposite ends of the palette (e.g. contrast vs base) or the recommended tier stops reading as recommended."
+  ],
+  "slots": {
+    "eyebrowText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "sectionHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "standfirstText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2], "attribute": "content" }
+    },
+    "tier1Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 0], "attribute": "content" }
+    },
+    "tier1Price": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 1], "attribute": "content" }
+    },
+    "tier1Description": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 2], "attribute": "content" }
+    },
+    "tier1ButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 5, 0], "attribute": "text" }
+    },
+    "tier1ButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 0, 0, 5, 0], "attribute": "url" }
+    },
+    "featuredBadgeText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 0], "attribute": "content" }
+    },
+    "tier2Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 1], "attribute": "content" }
+    },
+    "tier2Price": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 2], "attribute": "content" }
+    },
+    "tier2Description": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 3], "attribute": "content" }
+    },
+    "tier2ButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 6, 0], "attribute": "text" }
+    },
+    "tier2ButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 1, 0, 6, 0], "attribute": "url" }
+    },
+    "tier3Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 0], "attribute": "content" }
+    },
+    "tier3Price": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 1], "attribute": "content" }
+    },
+    "tier3Description": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 2], "attribute": "content" }
+    },
+    "tier3ButtonLabel": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 5, 0], "attribute": "text" }
+    },
+    "tier3ButtonUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 2, 0, 5, 0], "attribute": "url" }
+    },
+    "backgroundColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "featuredColumnBackground": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 1, 1, 0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "primaryButtonBackground": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 1, 1, 0, 6, 0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": "typically",
+    "validTemplates": ["page", "front-page", "home"],
+    "requiresDynamicContext": false
+  },
+  "notes": "A three-tier pricing section with an inverted, badged featured tier in the middle. Cards are core/group surfaces inside core/column; feature lists use the native core/list grammar (list > list-item). Headings descend h2 > h3 > h4 (section > tier > price); no h1. All native blocks, no new allowlist entries. The outline buttons use the is-style-outline block-style variation core provides."
+}

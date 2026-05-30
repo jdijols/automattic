@@ -19,6 +19,7 @@ describe("pattern-library metadata loader", () => {
       "hero-portfolio-dark",
       "landing-hero",
       "magazine-index",
+      "pricing-table",
       "query-loop-list",
       "site-footer",
     ]);
