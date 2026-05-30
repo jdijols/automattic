@@ -84,6 +84,7 @@ export const PATTERN_SLUGS = [
   "pricing-table",
   "query-loop-list",
   "site-footer",
+  "testimonials-row",
 ] as const;
 export type PatternSlug = (typeof PATTERN_SLUGS)[number];
 

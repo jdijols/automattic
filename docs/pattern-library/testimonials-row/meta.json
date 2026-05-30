@@ -1,0 +1,117 @@
+{
+  "name": "testimonials-row",
+  "title": "Testimonials / Social Proof Row",
+  "region": "content",
+  "validRegions": ["content", "page-section"],
+  "blocksUsed": [
+    "core/group",
+    "core/columns",
+    "core/column",
+    "core/heading",
+    "core/paragraph",
+    "core/image"
+  ],
+  "tokensAccepted": {
+    "color": ["base", "contrast", "secondary", "primary"],
+    "fontSize": ["small", "medium", "xx-large"],
+    "spacing": ["30", "40", "50", "60", "80"]
+  },
+  "parameterizable": {
+    "content": [
+      "eyebrow + section heading + standfirst",
+      "three testimonial quotes",
+      "three author names + roles"
+    ],
+    "tokens": ["page surface color", "accent (eyebrow + star rating) color"],
+    "media": ["three author avatar image URLs"],
+    "structuralKnobs": []
+  },
+  "locked": [
+    "block nesting: group(surface) > [group(header), columns > 3 column > card group]",
+    "exactly three testimonial cards; each: star rating, quote, then an avatar + name/role attribution row",
+    "the attribution is a horizontal flex group (avatar image beside the stacked name/role)",
+    "headings are h2 (section) — never h1 (a hero, if present, owns the single h1)"
+  ],
+  "parameterizationRules": [
+    "Three cards is the social-proof unit (enough to feel like a chorus, few enough to read at a glance). A different count is a different pattern, not a knob.",
+    "Each card pairs ONE quote with ONE real attribution (name + role + avatar). Never leave an avatar slot pointing at a placeholder in shipped output — an anonymous testimonial reads as fake; supply a real image URL or drop the avatar by omitting the slot."
+  ],
+  "slots": {
+    "eyebrowText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 0], "attribute": "content" }
+    },
+    "sectionHeadingText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 1], "attribute": "content" }
+    },
+    "standfirstText": {
+      "kind": "text",
+      "target": { "blockPath": [0, 0, 2], "attribute": "content" }
+    },
+    "quote1": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 1], "attribute": "content" }
+    },
+    "author1Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 2, 1, 0], "attribute": "content" }
+    },
+    "author1Role": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 0, 0, 2, 1, 1], "attribute": "content" }
+    },
+    "author1AvatarUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 0, 0, 2, 0], "attribute": "url" }
+    },
+    "quote2": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 1], "attribute": "content" }
+    },
+    "author2Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 2, 1, 0], "attribute": "content" }
+    },
+    "author2Role": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 1, 0, 2, 1, 1], "attribute": "content" }
+    },
+    "author2AvatarUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 1, 0, 2, 0], "attribute": "url" }
+    },
+    "quote3": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 1], "attribute": "content" }
+    },
+    "author3Name": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 2, 1, 0], "attribute": "content" }
+    },
+    "author3Role": {
+      "kind": "text",
+      "target": { "blockPath": [0, 1, 2, 0, 2, 1, 1], "attribute": "content" }
+    },
+    "author3AvatarUrl": {
+      "kind": "url",
+      "target": { "blockPath": [0, 1, 2, 0, 2, 0], "attribute": "url" }
+    },
+    "backgroundColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0], "attribute": "backgroundColor" },
+      "bounds": { "vocab": "color" }
+    },
+    "accentColor": {
+      "kind": "tokenRef",
+      "target": { "blockPath": [0, 0, 0], "attribute": "textColor" },
+      "bounds": { "vocab": "color" }
+    }
+  },
+  "compositionRules": {
+    "occursOncePerPage": "typically",
+    "validTemplates": ["page", "front-page", "home"],
+    "requiresDynamicContext": false
+  },
+  "notes": "A three-up social-proof row: each card pairs a star rating and a pull-quote with an avatar + name/role attribution (a horizontal flex group). Reuses core/image for avatars (its url attribute carries the safe-scheme check). Headings stay at h2; no h1. All native blocks, no new allowlist entries."
+}
